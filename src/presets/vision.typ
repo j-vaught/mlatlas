@@ -22,21 +22,22 @@
   seq(..range(blocks).map(unit))
 }
 
-// LeNet-style CNN as 3-D feature-map prisms (render with dir: "ltr").
+// LeNet-style CNN as 3-D feature-map prisms (render with dir: "ltr"): the front face
+// shrinks with spatial size, the depth grows with channels.
 #let lenet() = seq(
-  slab(label: [], dims: [32×32×1], h: 58pt, w: 11pt, depth: 8pt, role: "data"),
-  conv(label: [C1], spatial: [28×28], channels: 6, h: 52pt, role: "attention"),
-  conv(label: [S2], spatial: [14×14], channels: 6, h: 30pt, role: "norm"),
-  conv(label: [C3], spatial: [10×10], channels: 16, h: 22pt, role: "attention"),
-  conv(label: [S4], spatial: [5×5], channels: 16, h: 14pt, role: "norm"),
+  conv(label: [Input], spatial: 32, channels: 1, role: "data"),
+  conv(label: [C1], spatial: 28, channels: 6, role: "data"),
+  conv(label: [S2], spatial: 14, channels: 6, role: "norm"),
+  conv(label: [C3], spatial: 10, channels: 16, role: "data"),
+  conv(label: [S4], spatial: 5, channels: 16, role: "norm"),
   block(id: "fc", label: [FC\ 120], role: "op"),
   block(id: "out", label: [Softmax\ 10], role: "param", emphasis: true),
 )
 
-// A VGG-style block: `count` convs at the same resolution, then a pool.
-#let vgg-block(count: 2, channels: 64, spatial: [224×224], h: 40pt) = seq(
-  ..range(count).map(i => conv(label: [3×3], spatial: spatial, channels: channels, h: h, role: "attention")),
-  conv(label: [pool], spatial: spatial, channels: channels, h: h * 0.6, role: "norm"),
+// A VGG-style block: `count` convs at one resolution, then a pool (halved resolution).
+#let vgg-block(count: 2, channels: 64, spatial: 56, name: none) = seq(
+  ..range(count).map(_ => conv(label: name, spatial: spatial, channels: channels, role: "data")),
+  conv(label: [pool], spatial: calc.max(1, calc.floor(spatial / 2)), channels: channels, role: "norm"),
 )
 
 // A U-Net: encoder (left, down), bottleneck (centre), decoder (right, up), with

@@ -33,13 +33,12 @@
   let s = _resolve-node-style(n, th, role-map)
   if n.kind == "slab" {
     let front = if s.fill == none { th.palette.b10 } else { s.fill }
-    let cub = cuboid(
-      n.data.at("w", default: 15pt), n.data.at("h", default: 34pt), n.data.at("depth", default: 15pt),
-      front, s.stroke, n.label, s.text-fill,
-    )
-    let body = if n.data.at("dims", default: none) != none {
-      align(center, stack(dir: ttb, spacing: 3pt, cub, text(size: 6.5pt, fill: th.palette.b70)[#n.data.dims]))
-    } else { cub }
+    let strk = if n.stroke != auto { n.stroke } else { 0.8pt + th.ink } // thin neutral border on prisms
+    let cub = cuboid(n.data.at("w", default: 26pt), n.data.at("h", default: 26pt), n.data.at("depth", default: 14pt), front, strk)
+    let cap = n.data.at("caption", default: none)
+    let body = if cap != none {
+      stack(dir: ttb, spacing: 3pt, align(center, cub), align(center, text(size: 7pt, fill: th.ink)[#cap]))
+    } else { align(center, cub) }
     fl.fl-borderless(n.pos, body, name: n.id)
   } else {
     let lbl = if n.label == none { [] } else {
@@ -48,10 +47,12 @@
       if n.font != auto { t = text(font: n.font)[#t] }
       t
     }
+    // uniform default width for rectangles -> tidy columns; circles/others stay auto
+    let w = if n.width != auto { n.width } else if n.kind == "rect" { th.at("node-width", default: auto) } else { auto }
     fl.fl-node(
       n.pos, lbl, name: n.id, shape: fl.shape-of(n.kind),
       fill: s.fill, stroke: s.stroke, inset: s.inset, corner-radius: s.corner-radius,
-      width: n.width, height: n.height,
+      width: w, height: n.height,
     )
   }
 }

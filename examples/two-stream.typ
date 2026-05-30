@@ -3,8 +3,8 @@
 
 #let image-stream = seq(
   block(id: "img", label: [Image], role: "data"),
-  conv(label: [Conv], channels: 64, role: "attention"),
-  conv(label: [Conv], channels: 128, role: "attention"),
+  conv(label: [Conv], spatial: 56, channels: 64, role: "attention"),
+  conv(label: [Conv], spatial: 28, channels: 128, role: "attention"),
 )
 #let text-stream = seq(
   block(id: "txt", label: [Text], role: "data"),
@@ -19,4 +19,5 @@
     head: seq(block(label: [MLP Head], role: "op"), block(label: [Output], role: "output")),
   ),
   theme: colorful,
+  spacing: (16mm, 13mm),
 )

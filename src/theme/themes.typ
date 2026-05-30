@@ -14,7 +14,8 @@
   corner-radius: 0pt,
   edge-corner-radius: 0pt,
   node-inset: 7pt,
-  spacing: (13mm, 10mm),
+  node-width: 26mm, // uniform block width -> tidy columns (overridable per node)
+  spacing: (11mm, 6mm),
   mark: "stealth", // the ONLY arrowhead style
   font: "New Computer Modern",
   font-size: 9pt,
