@@ -1,109 +1,116 @@
 # mlatlas
 
-**Declarative machine-learning, neural-network and AI diagrams for [Typst](https://typst.app).**
+**Declarative, print-first machine-learning & neural-network diagrams for [Typst](https://typst.app).**
 
-Describe the *model* — `transformer(blocks: 6)`, `resnet-stage(blocks: 3)`, a stack of
-`conv` feature maps — and get a clean, publication-quality figure in a consistent house
-style. You never place a coordinate, name a colour, or tune a stroke unless you want to.
+Describe the *model* — `transformer(blocks: 6)`, `mlp((4, 8, 8, 3))`, a two-stream fusion —
+and get a clean, publication-quality figure. Batteries-included defaults so a simple diagram
+is one line; full control (themes, per-element overrides, custom topologies, raw IR) when you
+need it.
 
-The defaults are opinionated and batteries-included so a simple diagram is one line; every
-default is overridable so a power user is never boxed in.
+<p align="center"><img src="media/themes.png" width="900" alt="The same Transformer block in mono, colorful, grayscale, and slides themes"></p>
 
-<p align="center">
-  <img src="media/transformer-encoder.png" height="430" alt="Transformer encoder">
-  &nbsp;&nbsp;
-  <img src="media/resnet-block.png" height="430" alt="ResNet bottleneck stage">
-</p>
-<p align="center">
-  <img src="media/cnn.png" width="760" alt="LeNet-style CNN with 3-D feature maps"><br>
-  <img src="media/simple.png" height="150" alt="A three-block diagram">
-</p>
+*The same diagram in four themes — one setting flips the whole look.*
 
-*Every figure above is produced from a few lines of `mlatlas`.*
+## Print-first by design
 
-## Design principles
+The default **`mono`** theme is built for paper: **light fills, dark text, sharp orthogonal
+edges, stealth arrows**, with garnet used only as a sparse accent. **Never a dark block with
+white text.** Switch the entire look with one setting:
 
-- **Semantic-first.** You declare *what the model is*; the library decides *how it looks*.
-- **Sharp & rectangular by default.** Right-angle nodes (`corner-radius: 0pt`), **stealth
-  arrowheads only**, **no curved lines anywhere** — straight runs, deterministic gutter
-  lanes for skips. Override per node/edge/theme if you really want curves.
-- **Batteries included, never a cage.** Sensible defaults for spacing, colour, fonts; drop
-  to the raw `graph`/IR layer or hand-tune any primitive whenever you need to.
-- **One brand, inherited everywhere.** A single theme (garnet accent, high contrast,
-  New Computer Modern) styles every preset. Swap it once to restyle everything.
-- **Standalone output.** Each figure compiles to its own `.typ` → `.pdf`, importable into a
-  larger document.
+```typst
+#render(ir)                       // mono (default) — restrained, print-safe
+#render(ir, theme: colorful)      // Okabe-Ito light tints (colourblind-safe)
+#render(ir, theme: grayscale)     // pure B&W, value + dash differentiation
+#render(ir, theme: slides)        // opt-in dark (auto white text)
+#render(ir, theme: palette-theme((op: rgb("#1F414D"), norm: rgb("#65780B"))))  // your own scheme
+```
+
+A luminance check picks readable text for *any* fill, so contrast is never wrong by accident.
 
 ## Quick start
 
 ```typst
-#import "@preview/mlatlas:0.1.0": *   // or a local path: #import "mlatlas/lib.typ": *
+#import "@preview/mlatlas:0.2.0": *   // or local: #import "mlatlas/lib.typ": *
 
 // Simple is one line — auto-wired, auto-themed.
 #render(seq(
   block(label: [Input], role: "data"),
   block(label: [Hidden Layer]),
-  block(label: [Output], role: "io"),
+  block(label: [Output], role: "output"),
 ))
 
-// A pre-norm Transformer encoder — residual skips routed automatically.
-#render(transformer(blocks: 6, heads: 8, rope: true))
-
-// A CNN as 3-D feature-map prisms.
-#render(
-  seq(
-    conv(label: [C1], spatial: [28#sym.times 28], channels: 6,  role: "attn"),
-    conv(label: [S2], spatial: [14#sym.times 14], channels: 6,  role: "norm"),
-    conv(label: [C3], spatial: [10#sym.times 10], channels: 16, role: "attn"),
-    block(label: [FC], role: "op"),
-  ),
-  dir: "ltr",
-)
+#render(transformer(blocks: 6, heads: 8, rope: true))   // residual skips auto-routed
+#render(mlp((4, 8, 8, 3)))                                // node-edge MLP
+#render(lenet(), dir: "ltr")                              // CNN as 3-D feature-map prisms
 ```
 
-## Customization — five levels, no forking
+## Custom topologies are first-class
+
+Dual-backbone, two-stream / multi-modal fusion, dual-head — a few readable calls, **no manual
+coordinates**:
+
+<p align="center">
+  <img src="media/two-stream.png" height="330" alt="Two-stream multi-modal fusion">
+  &nbsp;&nbsp;
+  <img src="media/dual-head.png" height="330" alt="Dual-head architecture">
+  &nbsp;&nbsp;
+  <img src="media/unet.png" height="330" alt="U-Net with skip connections">
+</p>
 
 ```typst
-transformer-block(heads: 12)                                  // 1. parameter
-block(label: [Conv], style: (fill: blue.lighten(60%)))        // 2. per-node style patch
-render(my-ir, theme: theme(spacing: (20mm, 14mm)))            // 3. custom theme
-render(my-ir, theme: code-theme)                              // 4. switch the font family
-graph(nodes: (...), edges: (...))                             // 5. full escape to raw nodes/edges
+// two-stream / multi-modal fusion
+#render(two-stream(image-stream, text-stream, fusion: [Fusion], head: head-stack))
+
+// shared backbone, two task heads
+#render(branch(backbone, cls-head, box-head))
+
+// arbitrary fan-in / fan-out
+#render(merge(arm-a, arm-b, arm-c, into: block(label: [Concat])))
 ```
 
-Fonts follow a deliberate either/or: **New Computer Modern** (formal, the default) or a
-**monospace "code" look** via `code-theme` / `theme(font: "DejaVu Sans Mono")`.
+## Customization — no forking
+
+```typst
+block(label: [Conv], style: (fill: rgb("#eee"), stroke: 2pt + rgb("#65780B")))  // per-node
+block(label: [Focal], emphasis: true)                                            // sparse garnet accent
+graph(edges: (("a", "b", (style: (stroke: 2pt + red), label: [grad])),))         // per-edge
+render(ir, role-map: (attention: "param"))                                       // restyle a category
+render(ir, theme: theme(spacing: (18mm, 12mm)))                                  // tweak any theme field
+graph(nodes: (..ir-nodes..), edges: (..))                                        // full IR escape hatch
+```
 
 ## Layout safety net
 
-`render` runs a layout check and **warns when an edge crosses an unrelated block** so you
-can fix it (or be alerted):
+`render` warns (by default) when an edge crosses an unrelated block — a bbox-aware,
+scale-independent check:
 
 ```typst
-#render(my-ir)                 // check: "warn"  (default) — shows a banner if a line crosses a block
-#render(my-ir, check: "error") // hard error instead
-#render(my-ir, check: "off")   // disable
+#render(ir)                  // check: "warn"  -> banner if a line crosses a block
+#render(ir, check: "error")  // hard error
+#render(ir, check: "off")
 ```
 
-## What's here (Phase 0)
+## What's here
 
 | Layer | Pieces |
 |---|---|
-| Theme | `garnet-theme` (default), `code-theme`, `theme(..)`, `style-of` |
-| IR | `ir-node`, `ir-edge`, `ir-group`, `frag`, `namespace`, `shift` |
-| Primitives | `block`, `slab`, `conv`, `op-node` |
-| Sugars | `seq`, `graph`, `residual`, `plate` |
-| Presets | `transformer`, `transformer-block`, `attention-head`, `resnet-stage` |
-| Render | `render`, `standalone`, `check-collisions` |
+| Themes | `mono` (default), `colorful`, `colorblind`, `grayscale`/`bw`, `slides`; `theme(..)`, `palette-theme(..)`, `theme-swatch` |
+| IR | `ir-node`, `ir-edge`, `frag`, `namespace`, `shift` (escape hatch) |
+| Primitives | `block`, `op-node`, `slab`/`conv` (3-D prisms), `neuron-graph` |
+| Composition | `seq`, `parallel`, `branch`, `merge`, `concat`, `residual`, `plate`, `graph` |
+| Presets | `perceptron`, `mlp`, `feedforward`, `transformer`(`-block`), `attention-head`, `resnet-stage`, `lenet`, `vgg-block`, `unet`, `two-stream` |
 
-See [`docs/design-spec.md`](docs/design-spec.md) for the full architecture and the roadmap
-toward covering the broader ML-diagram atlas (sequence cells, attention internals,
-generative models, graph/probabilistic models, plots, audio/vision/3-D, and the long tail).
+Architecture: a plain-dict semantic IR is the contract; primitives/presets emit IR; the
+renderer draws it via fletcher/cetz behind an adapter firewall. See
+[`docs/design-spec.md`](docs/design-spec.md) for the full design and the roadmap toward the
+broader ML-diagram atlas (sequence cells, attention internals, generative/graph/probabilistic
+models, plots, audio/3-D, and the long tail).
 
 ## Building the examples
 
 ```bash
-typst compile --root . examples/transformer-encoder.typ
+typst compile --root . examples/transformer.typ      # or any example
+./tools/render-all.sh                                 # compile + rasterize all
 ```
 
 ## License

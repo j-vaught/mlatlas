@@ -2,6 +2,32 @@
 
 All notable changes to **mlatlas** are documented here.
 
+## [0.2.0] — 2026-05-30
+
+A print-first rewrite. The library is now genuinely usable and broadly customizable.
+
+### Changed (breaking)
+- **Print-first theming.** Default `mono` theme uses LIGHT fills + DARK text + sharp
+  orthogonal edges; garnet is a sparse accent only. Replaces the old dark-fill/white-text
+  scheme (which is now confined to the opt-in `slides` theme). Three-tier tokens
+  (palette → roles → theme).
+- **Module restructure.** Flat `src/*.typ` split into `src/theme`, `src/ir`,
+  `src/adapters` (fletcher/cetz firewall), `src/layout`, `src/render`, `src/prim`,
+  `src/sugar`, `src/presets`.
+
+### Added
+- **Themes:** `colorful` (Okabe-Ito, colourblind-safe), `colorblind`, `grayscale`/`bw`,
+  `slides`; `theme()` / `palette-theme()` constructors; `theme-swatch()`; luminance
+  `pick-text` auto-contrast.
+- **Custom topologies:** `parallel`, `branch`, `merge`, `concat` — dual-backbone,
+  two-stream / multi-modal fusion, dual-head in a few calls.
+- **Primitives:** `neuron-graph` (perceptron/MLP), luminance-adaptive `slab`/`conv`.
+- **Presets:** `perceptron`, `mlp`, `feedforward`, `attention-head`, `lenet`, `vgg-block`,
+  `unet`, `two-stream`.
+- **Fixes:** per-edge `style` now honoured; bbox-aware, scale-independent collision
+  checker; gutter lane allocator (interval-graph colouring) for overlapping skips;
+  IR validation (duplicate-id / dangling-edge); fletcher/cetz behind an adapter firewall.
+
 ## [0.1.0] — 2026-05-30
 
 Phase 0 — foundation & contract. The semantic IR, the brand theme, the fletcher
