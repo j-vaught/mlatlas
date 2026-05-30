@@ -34,5 +34,8 @@
 #import "src/presets/nn.typ": perceptron, mlp, feedforward
 #import "src/presets/transformer.typ": transformer, transformer-block, attention-head
 #import "src/presets/vision.typ": resnet-stage, lenet, vgg-block, unet, two-stream
+#import "src/presets/generative.typ": gan, vae, diffusion-chain
+#import "src/presets/sequence.typ": rnn-unroll
+#import "src/presets/graph-models.typ": message-passing, gcn
 
 #let mlatlas-version = "0.2.0"
