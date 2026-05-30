@@ -1,0 +1,19 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Python tooling (build scripts only)
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ruff_cache/
+
+# Typst local cache
+.typst-cache/
+
+# NOTE: example/figure outputs (*.pdf, *.png) are intentionally tracked — they
+# showcase what the library produces.
