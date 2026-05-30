@@ -1,19 +1,38 @@
-// mlatlas — a Typst library for ML / neural-network / AI / vision / audio diagrams.
-// Public entry point. Import everything with:
-//   #import "@preview/mlatlas:0.1.0": *
+// mlatlas — a Typst library for ML / neural-network / AI / vision diagrams.
+// Public entry point:  #import "@preview/mlatlas:0.2.0": *
 //
-// Design: a plain-dict Semantic IR is the contract; primitives and presets emit IR;
-// `render` draws it with fletcher. Brand defaults (rectangular, garnet, high-contrast,
-// sharp orthogonal edges) live in one theme and are inherited everywhere. Every default
-// is overridable — by parameter, per-node/edge style, a custom theme, or by dropping to
-// the raw `graph`/IR layer.
+// Print-first by default (light fills, dark text, sharp orthogonal edges, stealth
+// arrows). Switch the whole look with one setting — `theme: colorful` / `grayscale` /
+// `slides` — or define your own scheme with `palette-theme(..)`. Build custom topologies
+// (dual-backbone, two-stream, dual-head) with `parallel` / `branch` / `merge`.
 
-#import "src/theme.typ": brand, garnet-theme, code-theme, theme, style-of, edge-style-of, deep-merge
-#import "src/ir.typ": ir-node, ir-edge, ir-group, frag, is-frag, namespace, shift, extent, frag-in, frag-out
-#import "src/primitives.typ": block, op-node, slab, conv
-#import "src/sugar.typ": seq, graph, residual, plate
-#import "src/render.typ": render, standalone, check-collisions
-#import "src/catalog/transformer.typ": transformer, transformer-block, attention-head
-#import "src/catalog/resnet.typ": resnet-stage
+// themes & customization
+#import "src/theme/themes.typ": (
+  mono, colorful, colorblind, grayscale, bw, slides, theme, palette-theme, style-of, edge-style-of,
+)
+#import "src/theme/tokens.typ": neutral, okabe, colorful-hues
+#import "src/theme/contrast.typ": lum, pick-text, tint, deep-merge
+#import "src/theme/roles.typ": color-roles
+#import "src/theme/swatch.typ": theme-swatch
 
-#let mlatlas-version = "0.1.0"
+// IR (escape hatch)
+#import "src/ir/ir.typ": ir-node, ir-edge, ir-group, frag, namespace, shift, extent, frag-in, frag-out, is-frag
+
+// render
+#import "src/render/render.typ": render, standalone
+
+// primitives
+#import "src/prim/block.typ": block
+#import "src/prim/op.typ": op-node, add-op, mul-op
+#import "src/prim/slab.typ": slab, conv
+#import "src/prim/neuron-graph.typ": neuron-graph
+
+// composition sugar
+#import "src/sugar/sugar.typ": seq, parallel, branch, merge, concat, residual, plate, graph
+
+// presets
+#import "src/presets/nn.typ": perceptron, mlp, feedforward
+#import "src/presets/transformer.typ": transformer, transformer-block, attention-head
+#import "src/presets/vision.typ": resnet-stage, lenet, vgg-block, unet, two-stream
+
+#let mlatlas-version = "0.2.0"
