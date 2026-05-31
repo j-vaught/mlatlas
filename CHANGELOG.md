@@ -2,6 +2,38 @@
 
 All notable changes to **mlatlas** are documented here.
 
+## [0.3.0] — 2026-05-31
+
+A hand-rolled 3-D block engine and a library-wide 3-D expansion.
+
+### Added
+- **3-D engine** (`src/adapters/3d.typ`): `block3d` (projects the 8 corners itself → correct
+  back-face culling + a single convex-hull silhouette at any camera angle), `feature-map`,
+  `scene` (depth-sorts overlapping blocks), `project`/`projector`, `block3d-anchors`. Two
+  projection families — rotation (`cam-iso`/`cam-dimetric`/`cam-top-down`) and oblique
+  (`cam-cabinet`/`cam-cavalier`/`cam-face`). Flat by default, opt-in `shade`; `seams` (ribbed
+  sub-layers) and `band` (ReLU stripe) overlays.
+- **3-D primitives:** `tensor3d` (labeled N-D box), `connect3d` (`arrow3d`/`dock`/`ribbon3d`),
+  `voxel-grid` + `conv3d-kernel` + `kernel-slide`.
+- **3-D renderers:** `resnet3d`, `unet3d`, `fpn3d`, `feature-stack`, `attention-3d` (multi-head
+  QKᵀ score cube), `transformer-3d` (`depth-plate` ×N), `rnn-unroll3d`, `lstm-cell3d`,
+  `vae3d`/`gan3d`, `vgg3d`/`alexnet3d`.
+- **IR integration:** a first-class `tensor` node (`kind: tensor3d`) that auto-layouts and
+  auto-edges through `render()`; the backend firewall holds (render.typ pulls a content-only
+  block from `adapters/3d.typ`, never cetz).
+- Verification probes (`probes/cam-sweep`, `before-after-vgg`, `3d-themes`) + many examples.
+
+### Changed
+- **`cnn` migrated onto the engine:** each conv group is now ONE block with internal `seams`
+  (not N chopped sub-prisms), depth reads `log(channels)`, one clean silhouette per group.
+  Default camera `cam-cabinet`. Public `#cnn(layers, ..)` signature unchanged.
+- **`two-stream` migrated:** prisms via `block3d`; the fusion node no longer pierced by the
+  merge arrows. `dual-head` and all public signatures unchanged.
+
+### Fixed
+- The conv-group "cap-on-last" bug and the stacked-card look (structurally impossible now).
+- Two-stream merge arrows piercing the fusion box.
+
 ## [0.2.0] — 2026-05-30
 
 A print-first rewrite. The library is now genuinely usable and broadly customizable.

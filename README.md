@@ -43,7 +43,7 @@ A luminance check picks readable text for *any* fill, so contrast is never wrong
 ## Quick start
 
 ```typst
-#import "@preview/mlatlas:0.2.0": *   // or local: #import "mlatlas/lib.typ": *
+#import "@preview/mlatlas:0.3.0": *   // or local: #import "mlatlas/lib.typ": *
 
 // Simple is one line — auto-wired, auto-themed.
 #render(seq(
@@ -55,6 +55,47 @@ A luminance check picks readable text for *any* fill, so contrast is never wrong
 #render(transformer(blocks: 6, heads: 8, rope: true))   // residual skips auto-routed
 #render(mlp((4, 8, 8, 3)))                                // node-edge MLP
 #render(lenet(), dir: "ltr")                              // CNN as 3-D feature-map prisms
+```
+
+## 3-D blocks, volumes & tensors
+
+<p align="center"><img src="media/gallery-3d.png" width="900" alt="3-D figures: CNN, U-Net, attention cube, transformer, ResNet, kernel-slide, RNN/LSTM, generative"></p>
+
+A small hand-rolled 3-D engine projects each block's eight corners itself — so back-face culling
+and a single clean silhouette are correct at **any** camera angle (cetz's native 3-D can't manage
+this cleanly, because it hides the projected coordinates: you get corner spikes and bow-tied
+outlines). Flat by default — the crisp edges carry the depth — with opt-in directional shading.
+
+```typst
+#import "@preview/cetz:0.5.2"
+#cetz.canvas(length: 1cm, {
+  import cetz.draw
+  block3d(draw, w: 1.4, h: 2.0, dep: 1.2, base: rgb("#FFF2E3"))         // one block, one call
+  feature-map(draw, (4, 0), spatial: 112, channels: 128, relu: true)    // spatial->height, channels->depth
+})
+```
+
+Architecture renderers compose it: `cnn` / `feature-stack` (feature-map rows), `resnet3d`,
+`unet3d`, `fpn3d`, `attention-3d` (the multi-head QKᵀ score cube), `transformer-3d`,
+`rnn-unroll3d`, `lstm-cell3d`, `voxel-grid`, `kernel-slide`, `vae3d` / `gan3d`. Or drop a 3-D
+`tensor` straight into the IR for auto-layout + edges:
+`render(seq(tensor(title: [x], axes: ([56], [56], [3])), tensor(title: [z], axes: ([1], [1], [128]))))`.
+
+The camera is three angles `(pitch, yaw, roll)` — exactly like cetz's `ortho` — set once per
+scene and overridable per block:
+
+| preset | family | look |
+|---|---|---|
+| `cam-iso` *(default)* | rotation | isometric, corner-front — sculptural |
+| `cam-dimetric` | rotation | gentle dimetric |
+| `cam-top-down` | rotation | high-angle |
+| `cam-cabinet` | oblique | upright front face, depth shears up-right — best for CNN rows |
+| `cam-cavalier` | oblique | upright front, full-depth |
+| `cam-face` | oblique | shallow oblique |
+
+```typst
+block3d(draw, w: 2, h: 2, dep: 2, cam: cam-cabinet, shade: true)   // a preset
+block3d(draw, w: 2, h: 2, dep: 2, cam: (30deg, -40deg, 8deg))      // or raw angles
 ```
 
 ## Custom topologies are first-class
@@ -109,10 +150,12 @@ scale-independent check:
 |---|---|
 | Themes | `mono` (default), `colorful`, `colorblind`, `grayscale`/`bw`, `slides`; `theme(..)`, `palette-theme(..)`, `theme-swatch` |
 | IR | `ir-node`, `ir-edge`, `frag`, `namespace`, `shift` (escape hatch) |
-| Primitives | `block`, `op-node`, `slab`/`conv` (3-D prisms), `neuron-graph` |
+| Primitives | `block`, `op-node`, `slab`/`conv` (3-D prisms), `neuron-graph`, `tensor` (3-D IR node) |
+| **3-D engine** | `block3d`, `feature-map`, `scene`, `project`, `tensor3d`, `arrow3d`/`dock`, `voxel-grid` + `cam-iso`/`cam-cabinet`/… presets |
 | Composition | `seq`, `parallel`, `branch`, `merge`, `concat`, `residual`, `plate`, `graph` |
 | Presets | `perceptron`, `mlp`, `feedforward`, `transformer`(`-block`), `attention-head`, `resnet-stage`, `unet`, `two-stream`, `gan`, `vae`, `rnn-unroll`, `gcn` |
-| **Dedicated renderers** | `cnn`/`vgg16`/`alexnet`/`lenet5` (PlotNeuralNet-grade prisms), `lstm-cell` (Olah), `message-passing` (GNN), `diffusion-chain` (DDPM), `lda-plate`/`hmm-chain` (PGM) |
+| **Dedicated renderers** | `cnn`/`vgg16`/`alexnet`/`lenet5` (PlotNeuralNet-grade), `lstm-cell` (Olah), `message-passing` (GNN), `diffusion-chain` (DDPM), `lda-plate`/`hmm-chain` (PGM) |
+| **3-D renderers** | `resnet3d`, `unet3d`, `fpn3d`, `attention-3d` (QKᵀ cube), `transformer-3d`, `rnn-unroll3d`, `lstm-cell3d`, `kernel-slide`, `vae3d`/`gan3d` |
 
 Architecture: a plain-dict semantic IR is the contract; primitives/presets emit IR; the
 renderer draws it via fletcher/cetz behind an adapter firewall. See

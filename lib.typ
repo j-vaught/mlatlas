@@ -1,5 +1,5 @@
 // mlatlas — a Typst library for ML / neural-network / AI / vision diagrams.
-// Public entry point:  #import "@preview/mlatlas:0.2.0": *
+// Public entry point:  #import "@preview/mlatlas:0.3.0": *
 //
 // Print-first by default (light fills, dark text, sharp orthogonal edges, stealth
 // arrows). Switch the whole look with one setting — `theme: colorful` / `grayscale` /
@@ -68,4 +68,4 @@
 #import "src/prim/voxel.typ": voxel-grid, conv3d-kernel, kernel-slide, voxel-palette
 #import "src/renderers/pyramid3d.typ": pyramid3d, vae3d, gan3d
 
-#let mlatlas-version = "0.2.0"
+#let mlatlas-version = "0.3.0"
