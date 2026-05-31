@@ -36,9 +36,11 @@
 #import "src/presets/vision.typ": resnet-stage, lenet, lenet5, vgg-block, vgg16, alexnet, unet, two-stream
 #import "src/renderers/cnn.typ": cnn, cnn-palette
 #import "src/renderers/lstm.typ": lstm-cell, lstm-palette
-#import "src/presets/generative.typ": gan, vae, diffusion-chain
+#import "src/presets/generative.typ": gan, vae
 #import "src/presets/sequence.typ": rnn-unroll
 #import "src/presets/graph-models.typ": gcn
+#import "src/renderers/diffusion.typ": diffusion-chain
+#import "src/renderers/pgm.typ": lda-plate, hmm-chain, pgm-palette
 #import "src/renderers/gnn.typ": message-passing, gnn-palette
 
 #let mlatlas-version = "0.2.0"

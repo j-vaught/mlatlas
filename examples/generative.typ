@@ -4,8 +4,9 @@
 
 #stack(
   dir: ltr,
-  spacing: 16pt,
-  align(top, render(gan())),
-  align(top, render(vae())),
-  align(top, render(diffusion-chain(steps: 4), dir: "ttb")),
+  spacing: 18pt,
+  align(top, render(gan(), theme: paper)),
+  align(top, render(vae(), theme: paper)),
 )
+#v(16pt)
+#diffusion-chain(steps: 6)
