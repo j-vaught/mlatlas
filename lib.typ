@@ -64,5 +64,8 @@
 #import "src/renderers/attention3d.typ": (
   attention-3d, attention-3d-figure, attn3d-palette, embedding-tensor3d, depth-plate, transformer-3d,
 )
+#import "src/renderers/rnn3d.typ": rnn-unroll3d, lstm-cell3d, rnn3d-palette
+#import "src/prim/voxel.typ": voxel-grid, conv3d-kernel, voxel-palette
+#import "src/renderers/pyramid3d.typ": pyramid3d, vae3d, gan3d
 
 #let mlatlas-version = "0.2.0"
