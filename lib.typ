@@ -34,6 +34,10 @@
   cam-iso, cam-dimetric, cam-cabinet, cam-cavalier, cam-face, cam-top-down, CAMERAS,
 )
 
+// 3-D tensor primitives + connectors
+#import "src/prim/tensor3d.typ": tensor3d, tensor3d-fig, tensor3d-palette
+#import "src/prim/connect3d.typ": arrow3d, dock, ribbon3d
+
 // composition sugar
 #import "src/sugar/sugar.typ": seq, parallel, branch, merge, concat, residual, plate, graph
 
@@ -57,5 +61,6 @@
   llm-arch, llm-figure, llm-compare, llm-palette, llama3-8b, olmo2-7b, deepseek-v3, qwen3-235b,
 )
 #import "src/renderers/gnn.typ": message-passing, gnn-palette
+#import "src/renderers/attention3d.typ": attention-3d, attention-3d-figure, attn3d-palette
 
 #let mlatlas-version = "0.2.0"
