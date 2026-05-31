@@ -38,8 +38,8 @@
   let dy = h * depth-k
   let y0 = -h / 2
   let y1 = h / 2
-  let top = front.lighten(13%).saturate(20%) // lighten but keep hue/chroma (no bleach to white)
-  let side = front.darken(15%)
+  let top = front.lighten(20%) // directional lighting: top brightest
+  let side = front.darken(18%) // side darkest
   // top face
   draw.line((cx, y1), (cx + w, y1), (cx + w + dx, y1 + dy), (cx + dx, y1 + dy), close: true, fill: top, stroke: stroke)
   // right cap
@@ -89,8 +89,8 @@
         let band = if L.at("relu", default: false) { pal.conv-band } else { none }
         let gstart = cx
         for k in range(n) {
-          // ReLU band only on the LAST sub-prism (one activation per group, not a barcode)
-          _prism(draw, cx, w, h, base, stroke, depth-k: depth-k, cap: k == n - 1, band: if k == n - 1 { band } else { none })
+          // ReLU band on each sub-prism (matches PlotNeuralNet's RightBandedBox)
+          _prism(draw, cx, w, h, base, stroke, depth-k: depth-k, cap: k == n - 1, band: band)
           cx = cx + w
         }
         let gcenter = (gstart + cx) / 2

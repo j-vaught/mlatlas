@@ -19,8 +19,8 @@
       let t = i / n
       let v = int(95 + 160 * t) // x_T dark (95), x_0 white (255)
       circle((x, 0), radius: r, fill: luma(v), stroke: 1pt + ink)
-      let lbl = if i == 0 { [$bold(x)_T$] } else if i == n { [$bold(x)_0$] } else { [$bold(x)_(T - #i)$] }
-      content((x, 0), text(size: 9pt, fill: if v < 150 { white } else { rgb("#1A1A1A") })[#lbl])
+      let lbl = if i == 0 { [$bold(x)_T$] } else if i == n { [$bold(x)_0$] } else { [$bold(x)_(#(n - i))$] }
+      content((x, 0), text(size: 9pt, fill: if v < 128 { white } else { rgb("#1A1A1A") })[#lbl])
     }
     // per-gap arrows as distinct peaks/valleys (so they don't merge into a single rail)
     for i in range(n) {

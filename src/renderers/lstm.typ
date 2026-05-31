@@ -76,19 +76,19 @@
     arr((6.6, 3.3 + gh / 2), (6.6, 5.0), (5.6 + 0.62, 5.0))
     arr((5.6, 5.0 + 0.62), (5.6, 6.0), (6.0, 6.0), (6.0, cy - 0.62))
 
-    // output path: tanh(C_t) * o_t -> h_t
-    let tx = 11.6
-    ln((tx, cy), (tx, 5.0 + 0.62)) // tap conveyor down to tanh oval
-    oval(tx, 5.0, $tanh$)
-    opc(tx, 3.0, $times$)
-    arr((tx, 5.0 - 0.62), (tx, 3.0 + 0.62)) // tanh -> output x
-    arr((9.6 + gw / 2, 3.3), (tx - 0.62, 3.3), (tx - 0.62, 3.0)) // output gate -> output x (left)
-    // h_t out (up to top-right and copy down to bottom-right)
-    arr((tx, 3.0 - 0.62), (tx, iy), (15.6, iy)) // -> h_t (next step)
-    ln((tx, 3.0), (tx + 1.0, 3.0))
-    arr((tx + 1.0, 3.0), (tx + 1.0, 8.4)) // -> h_t (up/out)
-    content((15.9, iy), text(size: 9pt, fill: p.text)[$h_t$], anchor: "west")
-    content((tx + 1.0, 8.8), text(size: 9pt, fill: p.text)[$h_t$])
+    // output path: h_t = o_t · tanh(C_t)  — routed to avoid crossing the conveyor
+    let toval = 7.6
+    let oy = 4.7
+    ln((toval, cy), (toval, oy + 0.62)) // tap the cell state down to the tanh oval
+    oval(toval, oy, $tanh$)
+    let omul = 9.6 // aligned under the output gate
+    opc(omul, oy, $times$)
+    arr((toval + 1.05, oy), (omul - 0.62, oy)) // tanh(C_t) -> output× from the left
+    arr((omul, 3.3 + gh / 2), (omul, oy - 0.62)) // output σ -> output× from below
+    arr((omul + 0.62, oy), (14.4, oy)) // h_t exits right at mid height (clear of conveyor + input bus)
+    content((14.7, oy), text(size: 9pt, fill: p.text)[$h_t$], anchor: "west")
+    // junction dots where wires genuinely branch
+    for jp in ((2.5, cy), (6.0, cy), (toval, cy)) { circle(jp, radius: 0.07, fill: p.line, stroke: none) }
 
     // input terminals
     term(-1.0, iy - 0.0, $h_(t-1)$, p.out, p.out-stroke)

@@ -9,7 +9,7 @@
   node: rgb("#ECECEC"), node-stroke: rgb("#3A3A3A"),
   target: rgb("#FBE1E3"), target-stroke: rgb("#73000A"),
   out: rgb("#E7EFD9"), out-stroke: rgb("#65780B"),
-  heads: (rgb("#466A9F"), rgb("#CC2E40"), rgb("#1F414D")),
+  heads: (rgb("#466A9F"), rgb("#CC2E40"), rgb("#65780B")),
   line: rgb("#262626"), muted: rgb("#5C5C5C"), text: rgb("#1E1E1E"),
 )
 
@@ -45,7 +45,7 @@
         let off = (k - (heads - 1) / 2) * 0.14
         let col = p.heads.at(calc.rem(k, p.heads.len()))
         // one centred arrowhead on the middle strand so the bundle has a single clean head
-        let mk = if k == calc.floor(heads / 2) { (end: "stealth", scale: 0.8) } else { (:) }
+        let mk = (end: "stealth", scale: 0.6)
         line((sx + px * off, sy + py * off), (ex + px * off, ey + py * off), stroke: 1.2pt + col, mark: mk)
       }
     }

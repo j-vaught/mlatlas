@@ -156,6 +156,6 @@
 
 #let llm-figure(..args) = cetz.canvas(length: 1cm, { llm-arch(..args) })
 
-#let llm-compare(models, gap: 8) = cetz.canvas(length: 1cm, {
+#let llm-compare(models, gap: 9.6) = cetz.canvas(length: 1cm, {
   for (i, m) in models.enumerate() { llm-arch(..m, origin: (i * gap, 0)) }
 })
