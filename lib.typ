@@ -24,7 +24,7 @@
 // primitives
 #import "src/prim/block.typ": block
 #import "src/prim/op.typ": op-node, add-op, mul-op
-#import "src/prim/slab.typ": slab, conv
+#import "src/prim/slab.typ": slab, conv, tensor
 #import "src/prim/neuron-graph.typ": neuron-graph
 
 // 3-D block engine (hand-rolled projection: project 8 corners -> cull -> hull silhouette)

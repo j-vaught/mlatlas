@@ -10,6 +10,7 @@
 #import "../ir/validate.typ": validate
 #import "../adapters/fletcher.typ" as fl
 #import "../adapters/cetz.typ": cuboid
+#import "../adapters/3d.typ": tensor3d-content // content-returning (keeps render.typ cetz-free)
 #import "../layout/layout.typ": resolve-route, gutter-axis, assign-lanes
 #import "collide.typ": check-collisions
 
@@ -39,6 +40,19 @@
     let body = if cap != none {
       stack(dir: ttb, spacing: 3pt, align(center, cub), align(center, text(size: 7pt, fill: th.ink)[#cap]))
     } else { align(center, cub) }
+    fl.fl-borderless(n.pos, body, name: n.id)
+  } else if n.kind == "tensor3d" {
+    let front = if s.fill == none { th.palette.b10 } else { s.fill }
+    let box = tensor3d-content(
+      dims: n.data.at("dims", default: (1.4, 1.6, 1.0)), base: front, edge: th.ink,
+      cam: n.data.at("cam", default: "iso"), shade: n.data.at("shade", default: false), seams: n.data.at("seams", default: ()),
+    )
+    let title = n.data.at("title", default: none)
+    let axes = n.data.at("axes", default: ())
+    let cap = if title != none and axes.len() > 0 { [#title \ #text(size: 0.82em, fill: luma(95))[#axes.join(" × ")]] } else if title != none { title } else if axes.len() > 0 { text(size: 0.82em)[#axes.join(" × ")] } else { none }
+    let body = if cap != none {
+      stack(dir: ttb, spacing: 3pt, align(center, box), align(center, text(size: 7pt, fill: th.ink)[#cap]))
+    } else { align(center, box) }
     fl.fl-borderless(n.pos, body, name: n.id)
   } else {
     let lbl = if n.label == none { [] } else {
