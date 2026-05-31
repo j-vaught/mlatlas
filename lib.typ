@@ -61,6 +61,8 @@
   llm-arch, llm-figure, llm-compare, llm-palette, llama3-8b, olmo2-7b, deepseek-v3, qwen3-235b,
 )
 #import "src/renderers/gnn.typ": message-passing, gnn-palette
-#import "src/renderers/attention3d.typ": attention-3d, attention-3d-figure, attn3d-palette
+#import "src/renderers/attention3d.typ": (
+  attention-3d, attention-3d-figure, attn3d-palette, embedding-tensor3d, depth-plate, transformer-3d,
+)
 
 #let mlatlas-version = "0.2.0"
