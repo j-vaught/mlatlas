@@ -7,7 +7,20 @@ and get a clean, publication-quality figure. Batteries-included defaults so a si
 is one line; full control (themes, per-element overrides, custom topologies, raw IR) when you
 need it.
 
-<p align="center"><img src="media/themes.png" width="900" alt="The same Transformer block in mono, colorful, grayscale, and slides themes"></p>
+<p align="center"><img src="media/cnn-vgg.png" width="900" alt="VGG-16 and LeNet-5 as 3-D feature-map prisms"></p>
+
+*Publication-grade figures from dedicated per-family renderers — VGG-16 / LeNet-5 above; LSTM
+cells (Olah), GNN message passing, DDPM chains, and LDA plates below.*
+
+<p align="center">
+  <img src="media/lstm-cell.png" height="210" alt="LSTM cell">
+  &nbsp;
+  <img src="media/gnn.png" height="210" alt="GNN message passing">
+  &nbsp;
+  <img src="media/pgm.png" height="210" alt="LDA plate notation">
+</p>
+
+<p align="center"><img src="media/themes.png" width="820" alt="The same Transformer block in four themes"></p>
 
 *The same diagram in four themes — one setting flips the whole look.*
 
@@ -98,7 +111,8 @@ scale-independent check:
 | IR | `ir-node`, `ir-edge`, `frag`, `namespace`, `shift` (escape hatch) |
 | Primitives | `block`, `op-node`, `slab`/`conv` (3-D prisms), `neuron-graph` |
 | Composition | `seq`, `parallel`, `branch`, `merge`, `concat`, `residual`, `plate`, `graph` |
-| Presets | `perceptron`, `mlp`, `feedforward`, `transformer`(`-block`), `attention-head`, `resnet-stage`, `lenet`, `vgg-block`, `unet`, `two-stream` |
+| Presets | `perceptron`, `mlp`, `feedforward`, `transformer`(`-block`), `attention-head`, `resnet-stage`, `unet`, `two-stream`, `gan`, `vae`, `rnn-unroll`, `gcn` |
+| **Dedicated renderers** | `cnn`/`vgg16`/`alexnet`/`lenet5` (PlotNeuralNet-grade prisms), `lstm-cell` (Olah), `message-passing` (GNN), `diffusion-chain` (DDPM), `lda-plate`/`hmm-chain` (PGM) |
 
 Architecture: a plain-dict semantic IR is the contract; primitives/presets emit IR; the
 renderer draws it via fletcher/cetz behind an adapter firewall. See
