@@ -96,9 +96,13 @@
   arr((0, yN2 + 0.3), (0, yFfn - 0.3))
   arr((0, yFfn + 0.3), (0, yAdd2 - 0.23))
 
-  // residual lanes (left side)
-  ln((0, yN1 - 0.45), (-lane, yN1 - 0.45), (-lane, yAdd1), (-0.23, yAdd1))
-  ln((0, yN2 - 0.5), (-lane, yN2 - 0.5), (-lane, yAdd2), (-0.23, yAdd2))
+  // residual lanes (left side): distinct offsets, tapped at the real branch points
+  // with junction dots; enter each ⊕ at its left (9 o'clock) point
+  let lane2 = lane + 0.32
+  ln((0, yN1 - 0.42), (-lane, yN1 - 0.42), (-lane, yAdd1), (-0.23, yAdd1))
+  ln((0, yAdd1 + 0.34), (-lane2, yAdd1 + 0.34), (-lane2, yAdd2), (-0.23, yAdd2))
+  circle(g((0, yN1 - 0.42)), radius: 0.06, fill: ink, stroke: none)
+  circle(g((0, yAdd1 + 0.34)), radius: 0.06, fill: ink, stroke: none)
 
   // RoPE / QK-norm taps on the far left
   if rope {
