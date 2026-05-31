@@ -5,6 +5,7 @@
 // Drawn in one cetz canvas for full control. Brand-adapted: sharp corners, stealth arrows.
 
 #import "@preview/cetz:0.5.2"
+#import "../adapters/3d.typ": block3d, cam-cabinet
 
 #let ms-palette = (
   ink: rgb("#363636"),
@@ -14,6 +15,7 @@
   out: rgb("#ECECEC"), out-stroke: rgb("#363636"),
   left: rgb("#CBE0F4"), left-stroke: rgb("#3F6DAA"),
   right: rgb("#F2E4C4"), right-stroke: rgb("#9A7F2E"),
+  edge: rgb("#243038"),
   text: rgb("#1A1A1A"),
 )
 
@@ -22,17 +24,12 @@
   draw.content((cx, cy), text(size: sz, fill: tcol)[#lbl])
 }
 
-// a small 3-D feature-map prism (front face = box; depth sheared up-right)
+// a small 3-D feature-map prism via the engine (cabinet oblique: upright front face, clean
+// hull silhouette). The `stroke` arg is kept for call-site compatibility but unused — the
+// engine draws fills stroke:none and lays one silhouette. The label sits on the upright front.
 #let _msprism(draw, cx, cy, lbl, fill, stroke, w: 2.5, h: 0.72) = {
-  let d = 0.34
-  let x0 = cx - w / 2
-  let x1 = cx + w / 2
-  let y0 = cy - h / 2
-  let y1 = cy + h / 2
-  draw.line((x0, y1), (x1, y1), (x1 + d, y1 + d), (x0 + d, y1 + d), close: true, fill: fill.lighten(16%), stroke: stroke)
-  draw.line((x1, y0), (x1, y1), (x1 + d, y1 + d), (x1 + d, y0 + d), close: true, fill: fill.darken(14%), stroke: stroke)
-  draw.rect((x0, y0), (x1, y1), fill: fill, stroke: stroke)
-  draw.content((cx, cy), text(size: 8.5pt, fill: rgb("#1A1A1A"))[#lbl])
+  block3d(draw, origin: (cx, cy), w: w, h: h, dep: 0.34, base: fill, edge: ms-palette.edge, cam: cam-cabinet)
+  if lbl != none { draw.content((cx, cy), text(size: 8.5pt, fill: rgb("#1A1A1A"))[#lbl]) }
 }
 
 // A shared backbone fanning out to N task heads (each head = a vertical list of labels).
@@ -118,12 +115,13 @@
 
     let bottomY = -(maxlen - 1) * rowh
     let fusionY = bottomY - rowh
-    _msbox(draw, 0, fusionY, fusion, p.op, 2pt + p.garnet)
-    // symmetric merge: each stream bottom -> down -> across -> into the fusion TOP face
-    // (arr is arr(start, end, ..midpoints), so end comes 2nd, waypoints after)
+    // symmetric merge: each stream bottom -> down -> across -> into the fusion TOP face.
+    // Draw the arrows FIRST, then the fusion box on top so its stroke caps the arrow tips
+    // (no pierce). (arr is arr(start, end, ..midpoints), so end comes 2nd, waypoints after.)
     let busY = fusionY + 0.55
     arr((-sx, bottomY - h / 2), (-0.55, fusionY + h / 2), (-sx, busY), (-0.55, busY))
     arr((sx, bottomY - h / 2), (0.55, fusionY + h / 2), (sx, busY), (0.55, busY))
+    _msbox(draw, 0, fusionY, fusion, p.op, 2pt + p.garnet)
 
     // head below the fusion (centred)
     for (i, lbl) in head.enumerate() {
