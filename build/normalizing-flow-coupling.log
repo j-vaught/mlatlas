@@ -1,23 +1,23 @@
 warning: `diff` is deprecated, use `partial` instead
-    ┌─ examples/refs/normalizing-flow-coupling.typ:184:72
+    ┌─ examples/refs/generative/normalizing-flow-coupling.typ:184:72
     │
 184 │       $log p_X (bold(x)) = log p_Z (bold(z)) + sum_(k=1)^K log abs(det (diff f_k^(-1)) / (diff bold(u)))$
     │                                                                         ^^^^
 
 warning: `diff` is deprecated, use `partial` instead
-    ┌─ examples/refs/normalizing-flow-coupling.typ:184:90
+    ┌─ examples/refs/generative/normalizing-flow-coupling.typ:184:90
     │
 184 │       $log p_X (bold(x)) = log p_Z (bold(z)) + sum_(k=1)^K log abs(det (diff f_k^(-1)) / (diff bold(u)))$
     │                                                                                           ^^^^
 
 warning: `dot.circle` is deprecated, use `dot.o` instead
-    ┌─ examples/refs/normalizing-flow-coupling.typ:234:56
+    ┌─ examples/refs/generative/normalizing-flow-coupling.typ:234:56
     │
 234 │   content((opx, yB), text(size: 8pt, fill: garnet)[$dot.circle$])
     │                                                         ^^^^^^
 
 warning: `dot.circle` is deprecated, use `dot.o` instead
-    ┌─ examples/refs/normalizing-flow-coupling.typ:250:100
+    ┌─ examples/refs/generative/normalizing-flow-coupling.typ:250:100
     │
 250 │   content((outx + 0.12, yB), anchor: "west", text(size: 7pt, fill: garnet)[$bold(v)_b = bold(s) dot.circle bold(u)_b + bold(t)$])
     │                                                                                                     ^^^^^^

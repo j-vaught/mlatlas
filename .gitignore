@@ -17,3 +17,6 @@ venv/
 
 # NOTE: example/figure outputs (*.pdf, *.png) are intentionally tracked — they
 # showcase what the library produces.
+
+# downloaded third-party textbooks (free to read; not redistributed here)
+references/

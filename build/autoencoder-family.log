@@ -1,0 +1,6 @@
+error: file not found (searched at /home/j-vaught/mlatlas/examples/src/renderers/cnn3d.typ)
+   ┌─ examples/refs/generative/autoencoder-family.typ:17:8
+   │
+17 │ #import "../../src/renderers/cnn3d.typ": volume, vol-anchors, cnn3d-palette
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
