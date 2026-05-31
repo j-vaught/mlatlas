@@ -17,11 +17,11 @@
   node-width: 26mm, // uniform block width -> tidy columns (overridable per node)
   spacing: (11mm, 6mm),
   mark: "stealth", // the ONLY arrowhead style
-  mark-scale: 65%, // crisp arrowheads sized to stroke
+  mark-scale: 85%, // crisp arrowheads sized to stroke (not faint nubs)
   font: "New Computer Modern",
   font-size: 9pt,
-  label-size: 7pt,
-  gutter: 0.5, // skip-lane offset (grid units)
+  label-size: 7.5pt,
+  gutter: 0.72, // skip-lane offset (grid units) — clear of the wide blocks
 )
 
 #let _theme(name, paper, ink, roles, edges) = base-geometry + (

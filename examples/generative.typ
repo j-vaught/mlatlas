@@ -1,12 +1,16 @@
-// Generative models: GAN, VAE, diffusion chain.
+// Generative models: GAN and VAE (the diffusion chain has its own example).
 #import "../lib.typ": *
-#set page(width: auto, height: auto, margin: 8pt, fill: white)
+#set page(width: auto, height: auto, margin: 12pt, fill: white)
 
 #stack(
   dir: ltr,
-  spacing: 18pt,
-  align(top, render(gan(), theme: paper)),
-  align(top, render(vae(), theme: paper)),
+  spacing: 26pt,
+  align(top)[
+    #align(center, text(weight: "bold")[(a) GAN]) #v(4pt)
+    #render(gan(), theme: paper)
+  ],
+  align(top)[
+    #align(center, text(weight: "bold")[(b) VAE]) #v(4pt)
+    #render(vae(), theme: paper)
+  ],
 )
-#v(16pt)
-#diffusion-chain(steps: 6)

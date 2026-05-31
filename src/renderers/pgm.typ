@@ -24,24 +24,25 @@
       rect((x0, y0), (x1, y1), stroke: 1pt + p.plate, radius: 0pt)
       content((x1 - 0.4, y0 + 0.32), text(size: 8.5pt, fill: p.plate)[#lbl])
     }
-    let arr(a, b) = line(a, b, stroke: 1pt + p.stroke, mark: (end: "stealth", scale: 0.5))
-    // plates behind
-    plate(1.25, -1.4, 7.05, 1.4, [M])
-    plate(3.3, -0.95, 6.9, 0.95, [N])
-    plate(7.7, -0.95, 9.55, 0.95, [K])
+    let arr(a, b) = line(a, b, stroke: 1pt + p.stroke, mark: (end: "stealth", scale: 0.8))
+    // plates behind (M gives N a uniform margin; K well clear to the right)
+    plate(1.3, -1.45, 7.45, 1.45, [M])
+    plate(3.35, -0.95, 6.9, 0.95, [N])
+    plate(8.75, -0.95, 10.65, 0.95, [K])
     // nodes
     node(0, 0, [$alpha$])
     node(2, 0, [$theta$])
     node(4, 0, [$z$])
     node(6, 0, [$w$], observed: true)
-    node(8.6, 0, [$phi.alt$])
-    node(10.7, 0, [$beta$])
+    node(9.7, 0, [$phi.alt$])
+    node(11.7, 0, [$beta$])
     // directed edges (generative order)
     arr((0 + r, 0), (2 - r, 0))
     arr((2 + r, 0), (4 - r, 0))
     arr((4 + r, 0), (6 - r, 0))
-    arr((8.6 - r, 0), (6 + r, 0))
-    arr((10.7 - r, 0), (8.6 + r, 0))
+    arr((9.7 - r, 0), (6 + r, 0))
+    arr((11.7 - r, 0), (9.7 + r, 0))
+    content((3.55, 1.95), text(size: 9pt, weight: "bold", fill: p.text)[(a) LDA])
   })
 }
 
@@ -53,7 +54,7 @@
     import cetz.draw: circle, line, content
     let r = 0.5
     let sp = 2.2
-    let arr(a, b) = line(a, b, stroke: 1pt + p.stroke, mark: (end: "stealth", scale: 0.5))
+    let arr(a, b) = line(a, b, stroke: 1pt + p.stroke, mark: (end: "stealth", scale: 0.8))
     for t in range(steps) {
       let x = t * sp
       circle((x, 1.4), radius: r, fill: p.latent, stroke: 1.1pt + p.stroke)
@@ -63,5 +64,6 @@
       arr((x, 1.4 - r), (x, -1.0 + r)) // emission z_t -> x_t
       if t > 0 { arr((x - sp + r, 1.4), (x - r, 1.4)) } // transition z_{t-1} -> z_t
     }
+    content((0, 2.35), text(size: 9pt, weight: "bold", fill: p.text)[(b) HMM])
   })
 }

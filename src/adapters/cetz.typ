@@ -19,7 +19,7 @@
   let dy = dp * 0.38
   // directional lighting: top brightest, front mid, side darkest (top > front > side)
   let light = lum(front) >= 0.5
-  let top = if light { front.lighten(13%) } else { front.lighten(26%) }
+  let top = if light { front.lighten(13%).saturate(18%) } else { front.lighten(26%) }
   let side = if light { front.darken(15%) } else { front.lighten(7%) }
   cetz.canvas(length: 1pt, {
     import cetz.draw: line, rect

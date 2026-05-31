@@ -9,7 +9,7 @@
   node: rgb("#ECECEC"), node-stroke: rgb("#3A3A3A"),
   target: rgb("#FBE1E3"), target-stroke: rgb("#73000A"),
   out: rgb("#E7EFD9"), out-stroke: rgb("#65780B"),
-  heads: (rgb("#466A9F"), rgb("#65780B"), rgb("#A4408F")),
+  heads: (rgb("#466A9F"), rgb("#CC2E40"), rgb("#1F414D")),
   line: rgb("#262626"), muted: rgb("#5C5C5C"), text: rgb("#1E1E1E"),
 )
 
@@ -42,10 +42,11 @@
       let ex = 0 - ux * (nr + 0.18)
       let ey = 0 - uy * (nr + 0.18)
       for k in range(heads) {
-        let off = (k - (heads - 1) / 2) * 0.13
+        let off = (k - (heads - 1) / 2) * 0.14
         let col = p.heads.at(calc.rem(k, p.heads.len()))
-        let mk = if k == heads - 1 { (end: "stealth", scale: 0.5) } else { (:) }
-        line((sx + px * off, sy + py * off), (ex + px * off, ey + py * off), stroke: 1.1pt + col, mark: mk)
+        // one centred arrowhead on the middle strand so the bundle has a single clean head
+        let mk = if k == calc.floor(heads / 2) { (end: "stealth", scale: 0.8) } else { (:) }
+        line((sx + px * off, sy + py * off), (ex + px * off, ey + py * off), stroke: 1.2pt + col, mark: mk)
       }
     }
     // neighbour nodes
@@ -55,14 +56,14 @@
     }
     // alpha label on the first strand
     let f = positions.at(0)
-    content((f.at(0) * 0.46, f.at(1) * 0.46 + 0.32), text(size: 7.5pt, fill: p.muted)[$alpha_(v 0)$])
+    content((f.at(0) * 0.55, f.at(1) * 0.55 + 0.42), text(size: 7.5pt, fill: p.muted)[$alpha_(v 0)$])
     // central target node
     circle((0, 0), radius: nr + 0.06, fill: p.target, stroke: 1.7pt + p.target-stroke)
     content((0, 0), text(size: 8pt, fill: p.text)[$h_v$])
     // aggregate -> updated node
-    line((nr + 0.1, 0), (R - nr - 0.15, 0), stroke: 2.2pt + p.line, mark: (end: "stealth", scale: 0.6))
+    line((nr + 0.1, 0), (R - nr - 0.15, 0), stroke: 2.2pt + p.line, mark: (end: "stealth", scale: 0.85))
     content(((nr + R) / 2, 0.34), text(size: 7.5pt, fill: p.muted)[aggregate])
-    circle((R, 0), radius: nr, fill: p.out, stroke: 1.2pt + p.out-stroke)
+    circle((R, 0), radius: nr, fill: p.out, stroke: 1.6pt + p.out-stroke)
     content((R, 0), text(size: 8pt, fill: p.text)[$h'_v$])
   })
 }

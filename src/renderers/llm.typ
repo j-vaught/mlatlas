@@ -38,7 +38,7 @@
   let p = palette
   let ink = p.ink
   let w = 3.7
-  let lane = w / 2 - 0.35
+  let lane = w / 2 + 0.32 // residual gutter OUTSIDE the blocks (never crosses a border)
   let g(c) = (origin.at(0) + c.at(0), origin.at(1) + c.at(1))
   let box(y, lbl, fill: white, stroke: 0.9pt + ink, h: 0.6, tw: w, sz: 7.5pt) = {
     rect(g((-tw / 2, y - h / 2)), g((tw / 2, y + h / 2)), fill: fill, stroke: stroke, radius: 0pt)
@@ -48,8 +48,8 @@
     circle(g((0, y)), radius: 0.23, fill: white, stroke: 0.9pt + ink)
     content(g((0, y)), text(size: 8pt, fill: ink)[#sym])
   }
-  let arr(a, b) = line(g(a), g(b), stroke: 0.9pt + ink, mark: (end: "stealth", scale: 0.45))
-  let ln(..pts) = line(..pts.pos().map(g), stroke: 0.9pt + ink)
+  let arr(a, b) = line(g(a), g(b), stroke: 0.9pt + ink, mark: (end: "stealth", scale: 0.8))
+  let ln(..pts) = line(..pts.pos().map(g), stroke: 1pt + ink)
 
   let yIn = 0.0
   let yTok = 0.95
@@ -104,12 +104,12 @@
   if rope {
     rect(g((-w / 2 - 2.0, yAttn - 0.27)), g((-w / 2 - 1.1, yAttn + 0.27)), fill: p.rope, stroke: 0.9pt + ink)
     content(g((-w / 2 - 1.55, yAttn)), text(size: 7pt, fill: ink)[RoPE])
-    line(g((-w / 2 - 1.1, yAttn)), g((-w / 2 - 0.02, yAttn)), stroke: 0.9pt + ink, mark: (end: "stealth", scale: 0.4))
+    line(g((-w / 2 - 1.1, yAttn)), g((-w / 2 - 0.02, yAttn)), stroke: 0.9pt + ink, mark: (end: "stealth", scale: 0.7))
   }
   if qk-norm {
     rect(g((-w / 2 - 2.0, yN1 - 0.27)), g((-w / 2 - 1.1, yN1 + 0.27)), fill: p.norm, stroke: 0.9pt + ink)
     content(g((-w / 2 - 1.55, yN1)), text(size: 6.5pt, fill: ink)[QK-Norm])
-    line(g((-w / 2 - 1.1, yN1)), g((-w / 2 - 0.02, yN1)), stroke: 0.9pt + ink, mark: (end: "stealth", scale: 0.4))
+    line(g((-w / 2 - 1.1, yN1)), g((-w / 2 - 0.02, yN1)), stroke: 0.9pt + ink, mark: (end: "stealth", scale: 0.7))
   }
 
   // top stack
@@ -156,6 +156,6 @@
 
 #let llm-figure(..args) = cetz.canvas(length: 1cm, { llm-arch(..args) })
 
-#let llm-compare(models, gap: 9) = cetz.canvas(length: 1cm, {
+#let llm-compare(models, gap: 8) = cetz.canvas(length: 1cm, {
   for (i, m) in models.enumerate() { llm-arch(..m, origin: (i * gap, 0)) }
 })

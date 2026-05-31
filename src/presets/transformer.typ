@@ -17,9 +17,10 @@
   }
 }
 
-// A full encoder stack: embedding, N blocks (plated), final norm + head.
+// A full encoder stack: embedding, ONE representative block in a "×N" plate (so the
+// figure shows the repeated unit once, not N unrolled copies), final norm + head.
 #let transformer(blocks: 6, heads: 8, ff-mult: 4, pre-norm: true, rope: false) = {
-  let core = seq(..range(blocks).map(_ => transformer-block(heads: heads, ff-mult: ff-mult, pre-norm: pre-norm, rope: rope)))
+  let core = transformer-block(heads: heads, ff-mult: ff-mult, pre-norm: pre-norm, rope: rope)
   seq(
     block(id: "embed", label: [Token + Positional\ Embedding], role: "data"),
     plate(core, label: [Encoder block], count: blocks),

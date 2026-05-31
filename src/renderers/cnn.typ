@@ -38,7 +38,7 @@
   let dy = h * depth-k
   let y0 = -h / 2
   let y1 = h / 2
-  let top = front.lighten(13%)
+  let top = front.lighten(13%).saturate(20%) // lighten but keep hue/chroma (no bleach to white)
   let side = front.darken(15%)
   // top face
   draw.line((cx, y1), (cx + w, y1), (cx + w + dx, y1 + dy), (cx + dx, y1 + dy), close: true, fill: top, stroke: stroke)
@@ -74,7 +74,7 @@
         draw.line(
           (prev-east, 0), (x1, 0),
           stroke: 2pt + pal.edge.transparentize(15%),
-          mark: (end: "stealth", scale: 0.7),
+          mark: (end: "stealth", scale: 0.85),
         )
         cx = x1
       }

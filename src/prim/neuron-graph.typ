@@ -10,11 +10,12 @@
   id: "ng",
   role: "op",
   layer-roles: none, // optional array of roles per layer (e.g. input/op/output)
-  node-size: 6mm,
-  hgap: 1.4,
+  node-size: 5.5mm,
+  hgap: 2.1,
   vgap: 1,
   dense: true,
   edge-kind: "data",
+  edge-stroke: 0.4pt + rgb("#A8A8A8"), // light so dense fans recede behind the nodes
 ) = {
   let nodes = ()
   let edges = ()
@@ -30,7 +31,7 @@
     for l in range(layers.len() - 1) {
       for i in range(layers.at(l)) {
         for j in range(layers.at(l + 1)) {
-          edges.push(ir-edge(nid(l, i), nid(l + 1, j), kind: edge-kind, route: "straight", marks: (none, none)))
+          edges.push(ir-edge(nid(l, i), nid(l + 1, j), kind: edge-kind, route: "straight", marks: (none, none), stroke: edge-stroke))
         }
       }
     }
