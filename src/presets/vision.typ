@@ -4,6 +4,49 @@
 #import "../prim/block.typ": block
 #import "../prim/slab.typ": slab, conv
 #import "../sugar/sugar.typ": seq, residual, merge
+#import "../renderers/cnn.typ": cnn
+
+// Publication-grade CNN figures via the dedicated cetz prism renderer.
+#let lenet5() = cnn((
+  (kind: "input", spatial: 32, channels: 1),
+  (kind: "conv", spatial: 28, channels: 6, n: 1, relu: true, label: [C1]),
+  (kind: "pool", spatial: 14, channels: 6),
+  (kind: "conv", spatial: 10, channels: 16, n: 1, relu: true, label: [C3]),
+  (kind: "pool", spatial: 5, channels: 16),
+  (kind: "fc", units: 120, label: [F6]),
+  (kind: "fc", units: 84, label: [F7]),
+  (kind: "softmax", units: 10, label: [out]),
+))
+
+#let vgg16() = cnn((
+  (kind: "input", spatial: 224, channels: 3),
+  (kind: "conv", spatial: 224, channels: 64, n: 2, relu: true, label: [conv1]),
+  (kind: "pool", spatial: 112, channels: 64),
+  (kind: "conv", spatial: 112, channels: 128, n: 2, relu: true, label: [conv2]),
+  (kind: "pool", spatial: 56, channels: 128),
+  (kind: "conv", spatial: 56, channels: 256, n: 3, relu: true, label: [conv3]),
+  (kind: "pool", spatial: 28, channels: 256),
+  (kind: "conv", spatial: 28, channels: 512, n: 3, relu: true, label: [conv4]),
+  (kind: "pool", spatial: 14, channels: 512),
+  (kind: "conv", spatial: 14, channels: 512, n: 3, relu: true, label: [conv5]),
+  (kind: "pool", spatial: 7, channels: 512),
+  (kind: "fc", units: 4096, label: [fc6]),
+  (kind: "fc", units: 4096, label: [fc7]),
+  (kind: "softmax", units: 1000, label: [softmax]),
+))
+
+#let alexnet() = cnn((
+  (kind: "input", spatial: 227, channels: 3),
+  (kind: "conv", spatial: 55, channels: 96, n: 1, relu: true, label: [conv1]),
+  (kind: "pool", spatial: 27, channels: 96),
+  (kind: "conv", spatial: 27, channels: 256, n: 1, relu: true, label: [conv2]),
+  (kind: "pool", spatial: 13, channels: 256),
+  (kind: "conv", spatial: 13, channels: 384, n: 3, relu: true, label: [conv3-5]),
+  (kind: "pool", spatial: 6, channels: 256),
+  (kind: "fc", units: 4096, label: [fc6]),
+  (kind: "fc", units: 4096, label: [fc7]),
+  (kind: "softmax", units: 1000, label: [softmax]),
+))
 
 // One residual stage = `blocks` residual units (basic or bottleneck).
 #let resnet-stage(blocks: 2, channels: 64, bottleneck: false) = {
