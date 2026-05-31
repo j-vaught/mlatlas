@@ -1,21 +1,21 @@
 // mlatlas · renderers/cnn.typ
-// A dedicated PlotNeuralNet-grade CNN renderer drawn in ONE cetz canvas (not generic
-// fletcher boxes) for full control over the cabinet-oblique 3-D prisms. Recipe matches
-// PlotNeuralNet: front face upright, depth sheared up-right ×0.38, three edge-bounded
-// faces with directional lighting (top lighter, side darker), ReLU "trailing band",
-// flush-mounted pools, channel/spatial labels, stealth connectors across group gaps.
+// PlotNeuralNet-grade CNN renderer, now built on the hand-rolled 3-D engine
+// (src/adapters/3d.typ): ONE block3d per conv group with internal `seams` for the ribbed
+// multi-slice look (no chopped sub-prisms, so the old cap-on-last bug is structurally gone),
+// depth mapped to log(channels) (decoupled from spatial height), a single clean convex-hull
+// silhouette per group, and a screen-space layout so any camera lays the row out without
+// overlap. Public #cnn(layers, ..) signature stays back-compatible; presets unchanged.
 //
 //   #cnn((
 //     (kind: "input",   spatial: 224, channels: 3),
 //     (kind: "conv",    spatial: 224, channels: 64,  n: 2, relu: true, label: [conv1]),
 //     (kind: "pool",    spatial: 112, channels: 64),
-//     (kind: "conv",    spatial: 112, channels: 128, n: 2, relu: true, label: [conv2]),
-//     (kind: "pool",    spatial: 56,  channels: 128),
 //     (kind: "fc",      units: 4096, label: [fc6]),
 //     (kind: "softmax", units: 1000, label: [softmax]),
 //   ))
 
 #import "@preview/cetz:0.5.2"
+#import "../adapters/3d.typ": block3d, block3d-anchors, cam-iso, cam-cabinet
 
 #let cnn-palette = (
   input: rgb("#E9EDF0"),
@@ -31,107 +31,100 @@
 
 #let _hsize(spatial) = calc.max(15, calc.min(58, 13 + spatial * 0.16))
 #let _wsize(channels) = calc.max(7, calc.min(24, 4 + calc.log(calc.max(channels, 1), base: 2) * 2.4))
+// depth now reads CHANNEL COUNT (log), clamped so deep 512-ch blocks don't overrun the gap.
+#let _depsize(channels) = calc.max(6, calc.min(34, 5 + calc.log(calc.max(channels, 1), base: 2) * 3.0))
 
-// draw one prism; returns nothing, draws into the surrounding cetz canvas
-#let _prism(draw, cx, w, h, front, stroke, depth-k: 0.38, cap: true, band: none) = {
-  let dx = h * depth-k
-  let dy = h * depth-k
-  let y0 = -h / 2
-  let y1 = h / 2
-  let top = front.lighten(20%) // directional lighting: top brightest
-  let side = front.darken(18%) // side darkest
-  // top face
-  draw.line((cx, y1), (cx + w, y1), (cx + w + dx, y1 + dy), (cx + dx, y1 + dy), close: true, fill: top, stroke: stroke)
-  // right cap
-  if cap {
-    draw.line((cx + w, y0), (cx + w, y1), (cx + w + dx, y1 + dy), (cx + w + dx, y0 + dy), close: true, fill: side, stroke: stroke)
-  }
-  // front face
-  draw.rect((cx, y0), (cx + w, y1), fill: front, stroke: stroke)
-  // ReLU band on the trailing third of front + top
-  if band != none {
-    let bx = cx + w * 2 / 3
-    draw.line((bx, y1), (cx + w, y1), (cx + w + dx, y1 + dy), (bx + dx, y1 + dy), close: true, fill: band.lighten(13%), stroke: none)
-    draw.rect((bx, y0), (cx + w, y1), fill: band, stroke: none)
-    draw.rect((cx, y0), (cx + w, y1), fill: none, stroke: stroke) // re-stroke outline
-  }
-}
-
-#let cnn(layers, palette: cnn-palette, gap: 16, depth-k: 0.38, caption-gap: 12) = {
+// `cam` defaults to ISO (the engine/brand default); pass cam: cam-cabinet for a near-vertical,
+// label-on-row look. `depth-k` is kept for back-compat but ignored (depth now = log channels).
+#let cnn(layers, palette: cnn-palette, gap: 16, depth-k: 0.38, caption-gap: 12, theme: none, cam: cam-cabinet, shade: false) = {
   let pal = palette
   cetz.canvas(length: 1pt, {
     import cetz.draw
-    let stroke = 0.6pt + pal.edge
-    let cx = 0.0
-    let prev-east = none // (x, y-center) to draw connector from
-    let i = 0
+    let edge = pal.edge
+    let cursor = 0.0
+    let prev = none // previous group's projected east anchor (screen point)
     for L in layers {
       let kind = L.kind
       let flush = kind == "pool" or kind == "unpool"
-      // gap + connector arrow before a non-flush group (except the first)
-      if not flush and prev-east != none {
-        let x1 = cx + gap
-        draw.line(
-          (prev-east + 2, 0), (x1 - 4, 0),
-          stroke: 2pt + pal.edge.transparentize(15%),
-          mark: (end: "stealth", scale: 0.85),
-        )
-        cx = x1
-      }
 
+      // ---- resolve this layer's geometry + labels ----
+      let gw = 0.0
+      let h = 0.0
+      let dep = 0.0
+      let base = white
+      let band = none
+      let seams = ()
+      let lab1 = none
+      let lab2 = none
       if kind == "input" or kind == "conv" or kind == "unpool" {
         let sp = L.at("spatial", default: 32)
         let ch = L.at("channels", default: 16)
         let n = L.at("n", default: 1)
-        let h = _hsize(sp)
-        let w = _wsize(ch)
-        let base = if kind == "input" { pal.input } else if kind == "unpool" { pal.unpool } else { pal.conv }
-        let band = if L.at("relu", default: false) { pal.conv-band } else { none }
-        let gstart = cx
-        for k in range(n) {
-          // ReLU band on each sub-prism (matches PlotNeuralNet's RightBandedBox)
-          _prism(draw, cx, w, h, base, stroke, depth-k: depth-k, cap: k == n - 1, band: band)
-          cx = cx + w
-        }
-        let gcenter = (gstart + cx) / 2
-        // labels
-        let cap-text = L.at("label", default: none)
-        if cap-text != none {
-          draw.content((gcenter, -h / 2 - caption-gap), text(size: 8pt, weight: "bold", fill: pal.text)[#cap-text])
-        }
-        draw.content((gcenter, -h / 2 - caption-gap - 9), text(size: 6.5pt, fill: pal.muted)[#sp#sym.times#sp#sym.times#ch])
-        prev-east = cx
+        h = _hsize(sp)
+        gw = _wsize(ch) * n
+        dep = _depsize(ch)
+        base = if kind == "input" { pal.input } else if kind == "unpool" { pal.unpool } else { pal.conv }
+        if L.at("relu", default: false) { band = pal.conv-band }
+        if n > 1 { seams = range(1, n).map(k => k / n) }
+        lab1 = L.at("label", default: none)
+        lab2 = [#sp#sym.times#sp#sym.times#ch]
       } else if kind == "pool" {
         let sp = L.at("spatial", default: 16)
         let ch = L.at("channels", default: 16)
-        let h = _hsize(sp)
-        let w = 5.0
-        _prism(draw, cx, w, h, pal.pool, stroke, depth-k: depth-k, cap: true)
-        cx = cx + w
-        prev-east = cx
+        h = _hsize(sp)
+        gw = 5.0
+        dep = _depsize(ch)
+        base = pal.pool
       } else if kind == "fc" {
-        let units = L.at("units", default: 4096)
-        let h = 50.0
-        let w = 6.0
-        _prism(draw, cx, w, h, pal.fc, stroke, depth-k: depth-k, cap: true, band: pal.fc-band)
-        let gcenter = cx + w / 2
-        let cap-text = L.at("label", default: [fc])
-        draw.content((gcenter, -h / 2 - caption-gap), text(size: 8pt, weight: "bold", fill: pal.text)[#cap-text])
-        draw.content((gcenter, -h / 2 - caption-gap - 9), text(size: 6.5pt, fill: pal.muted)[#units])
-        cx = cx + w
-        prev-east = cx
+        h = 50.0
+        gw = 6.0
+        dep = 18.0
+        base = pal.fc
+        band = pal.fc-band
+        lab1 = L.at("label", default: [fc])
+        lab2 = [#L.at("units", default: 4096)]
       } else if kind == "softmax" {
-        let units = L.at("units", default: 1000)
-        let h = 28.0
-        let w = 7.0
-        _prism(draw, cx, w, h, pal.softmax, stroke, depth-k: depth-k, cap: true)
-        let gcenter = cx + w / 2
-        draw.content((gcenter, -h / 2 - caption-gap), text(size: 8pt, weight: "bold", fill: pal.text)[#L.at("label", default: [softmax])])
-        draw.content((gcenter, -h / 2 - caption-gap - 9), text(size: 6.5pt, fill: pal.muted)[#units])
-        cx = cx + w
-        prev-east = cx
+        h = 28.0
+        gw = 7.0
+        dep = 11.0
+        base = pal.softmax
+        lab1 = L.at("label", default: [softmax])
+        lab2 = [#L.at("units", default: 1000)]
       }
-      i = i + 1
+
+      // ---- screen-space placement (camera-agnostic; no overlap at any angle) ----
+      let a0 = block3d-anchors(origin: (0, 0), w: gw, h: h, dep: dep, cam: cam)
+      let sw = a0.umax - a0.umin
+      let left-pad = -a0.umin
+      if not flush and prev != none { cursor = cursor + gap }
+      let ox = cursor + left-pad
+      let A = block3d-anchors(origin: (ox, 0), w: gw, h: h, dep: dep, cam: cam)
+
+      // connector across the gap (stealth), from the previous east to this west, at mid-height
+      if not flush and prev != none {
+        draw.line(
+          (prev.at(0) + 2, 0), ((A.anchor)("west").at(0) - 2, 0),
+          stroke: 2pt + edge.transparentize(15%), mark: (end: "stealth", scale: 0.85),
+        )
+      }
+
+      block3d(
+        draw, origin: (ox, 0), w: gw, h: h, dep: dep, base: base, edge: edge, cam: cam, shade: shade,
+        seams: seams, band: band, band-frac: if band != none { 0.18 } else { 0.0 },
+      )
+
+      // ---- labels below the projected silhouette ----
+      let lb = (A.anchor)("bottom-screen").at(1) - caption-gap
+      if lab1 != none {
+        draw.content((ox, lb), text(size: 8pt, weight: "bold", fill: pal.text)[#lab1])
+      }
+      if lab2 != none {
+        let ly = if lab1 != none { lb - 9 } else { lb }
+        draw.content((ox, ly), text(size: 6.5pt, fill: pal.muted)[#lab2])
+      }
+
+      cursor = cursor + sw
+      prev = (A.anchor)("east")
     }
   })
 }

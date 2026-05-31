@@ -30,13 +30,47 @@
 }
 
 // ---------------------------------------------------------------- camera presets
-// angle triple = (pitch about x, yaw about y, roll about z) — mirrors cetz ortho(x,y,z).
-#let cam-iso = (35.264deg, 45deg, 0deg) // DEFAULT
-#let cam-cabinet = (25deg, -30deg, 0deg)
-#let cam-face = (22deg, -30deg, 0deg)
+// Two projection families, both of which keep correct cull + a clean hull silhouette:
+//  * ROTATION (axonometric): an angle triple (pitch x, yaw y, roll z) — mirrors cetz ortho.
+//    Iso/dimetric/top-down. Distorts the front face (everything tilts) -> "sculptural" look.
+//  * OBLIQUE: (mode:"oblique", angle, scale) — front face stays a TRUE upright rectangle, only
+//    depth shears up-right. Cabinet (scale .5) / cavalier (scale 1). Best for labeled CNN rows.
+#let cam-iso = (35.264deg, 45deg, 0deg) // engine / hero DEFAULT (rotation)
+#let cam-dimetric = (20deg, -35deg, 0deg)
 #let cam-top-down = (62deg, -28deg, 0deg)
-#let CAMERAS = (iso: cam-iso, cabinet: cam-cabinet, face: cam-face, "top-down": cam-top-down)
+#let cam-cabinet = (mode: "oblique", angle: 40deg, scale: 0.5) // CNN-row default (true oblique)
+#let cam-cavalier = (mode: "oblique", angle: 45deg, scale: 1.0)
+#let cam-face = (mode: "oblique", angle: 35deg, scale: 0.42)
+#let CAMERAS = (
+  iso: cam-iso, dimetric: cam-dimetric, "top-down": cam-top-down,
+  cabinet: cam-cabinet, cavalier: cam-cavalier, face: cam-face,
+)
 #let _resolve-cam(cam) = if type(cam) == str { CAMERAS.at(cam, default: cam-iso) } else { cam }
+
+// A projector bundle for a camera: p2 (3-D point -> 2-D, no origin), vis (normal -> visible?),
+// depth (3-D point -> painter-sort key), litn (normal -> lighting-space normal for shade).
+#let _proj-of(cam) = {
+  let c = _resolve-cam(cam)
+  if type(c) == dictionary and c.at("mode", default: none) == "oblique" {
+    let kx = c.scale * calc.cos(c.angle)
+    let ky = c.scale * calc.sin(c.angle)
+    let view = (kx, ky, -1) // direction toward the viewer (for cull + depth)
+    (
+      p2: p => (p.at(0) + p.at(2) * kx, p.at(1) + p.at(2) * ky),
+      vis: n => (n.at(0) * view.at(0) + n.at(1) * view.at(1) + n.at(2) * view.at(2)) > 0.0,
+      depth: p => p.at(0) * view.at(0) + p.at(1) * view.at(1) + p.at(2) * view.at(2),
+      litn: n => n,
+    )
+  } else {
+    let R = _rot(c.at(0), c.at(1), c.at(2))
+    (
+      p2: p => { let r = _mv(R, p); (r.at(0), r.at(1)) },
+      vis: n => _mv(R, n).at(2) > 0.0,
+      depth: p => _mv(R, p).at(2),
+      litn: n => _mv(R, n),
+    )
+  }
+}
 
 // ---------------------------------------------------------------- box geometry (centered)
 #let _CORNERS(w, h, d) = (
@@ -71,36 +105,30 @@
 
 // ---------------------------------------------------------------- projection (public)
 #let project(p, cam: cam-iso, origin: (0, 0)) = {
-  let c = _resolve-cam(cam)
-  let r = _mv(_rot(c.at(0), c.at(1), c.at(2)), p)
-  (origin.at(0) + r.at(0), origin.at(1) + r.at(1))
+  let q = (_proj-of(cam).p2)(p)
+  (origin.at(0) + q.at(0), origin.at(1) + q.at(1))
 }
-#let project-z(p, cam: cam-iso) = {
-  let c = _resolve-cam(cam)
-  _mv(_rot(c.at(0), c.at(1), c.at(2)), p).at(2)
-}
+#let project-z(p, cam: cam-iso) = (_proj-of(cam).depth)(p)
 #let projector(cam: cam-iso, origin: (0, 0)) = {
-  let c = _resolve-cam(cam)
-  let R = _rot(c.at(0), c.at(1), c.at(2))
-  (p) => { let r = _mv(R, p); (origin.at(0) + r.at(0), origin.at(1) + r.at(1)) }
+  let pj = _proj-of(cam).p2
+  (p) => { let q = pj(p); (origin.at(0) + q.at(0), origin.at(1) + q.at(1)) }
 }
 
 // Anchor handle (pure computation — NO drawing). block3d itself returns drawn content (a cetz
 // constraint), so attach-points are computed here. Returns projected bbox + per-face centers + far-z.
 #let block3d-anchors(origin: (0, 0), w: 2, h: 2, dep: 2, cam: cam-iso) = {
-  let c = _resolve-cam(cam)
-  let R = _rot(c.at(0), c.at(1), c.at(2))
-  let pr(p) = { let r = _mv(R, p); (origin.at(0) + r.at(0), origin.at(1) + r.at(1)) }
+  let pj = _proj-of(cam)
+  let pr(p) = { let q = (pj.p2)(p); (origin.at(0) + q.at(0), origin.at(1) + q.at(1)) }
   let C = _CORNERS(w, h, dep)
   let P = C.map(pr)
   let us = P.map(p => p.at(0))
   let vs = P.map(p => p.at(1))
-  let vis = _FACES.filter(f => _mv(R, f.n).at(2) > 0.0).map(f => f.name)
+  let vis = _FACES.filter(f => (pj.vis)(f.n)).map(f => f.name)
   (
     proj: P,
     center: origin,
     umin: calc.min(..us), umax: calc.max(..us), vmin: calc.min(..vs), vmax: calc.max(..vs),
-    "far-z": C.fold(0.0, (s, p) => s + _mv(R, p).at(2)) / 8,
+    "far-z": C.fold(0.0, (s, p) => s + (pj.depth)(p)) / 8,
     vis: vis,
     // projected face-center anchors (named) + screen-bbox anchors for connectors/labels
     anchor: (name) => {
@@ -127,22 +155,21 @@
   seams: (), band: none, band-frac: 0.0,
   sil-weight: 0.95pt, fold-weight: 0.45pt, opacity: 100%,
 ) = {
-  let c = _resolve-cam(cam)
-  let R = _rot(c.at(0), c.at(1), c.at(2))
-  let pr(p) = { let r = _mv(R, p); (origin.at(0) + r.at(0), origin.at(1) + r.at(1)) }
+  let pj = _proj-of(cam)
+  let pr(p) = { let q = (pj.p2)(p); (origin.at(0) + q.at(0), origin.at(1) + q.at(1)) }
   let C = _CORNERS(w, h, dep)
   let P = C.map(pr)
-  // global light (object space) for shade — consistent across all blocks regardless of camera
+  // global light for shade — consistent across all blocks regardless of camera
   let L = { let l = (0.4, 0.7, 0.65); let m = calc.sqrt(0.4 * 0.4 + 0.7 * 0.7 + 0.65 * 0.65); l.map(v => v / m) }
   let face-fill(n) = {
     if not shade { base } else {
-      let nr = _mv(R, n)
+      let nr = (pj.litn)(n)
       let d = calc.max(0.0, nr.at(0) * L.at(0) + nr.at(1) * L.at(1) + nr.at(2) * L.at(2))
       let pct = 0.55 + 0.5 * d - 0.8
       if pct >= 0 { base.lighten(calc.round(pct * 100) * 1%) } else { base.darken(calc.round(-pct * 100) * 1%) }
     }
   }
-  let vis = _FACES.filter(f => _mv(R, f.n).at(2) > 0.0)
+  let vis = _FACES.filter(f => (pj.vis)(f.n))
   let vis-names = vis.map(f => f.name)
   let bf = if opacity == 100% { (col) => col } else { (col) => col.transparentize(100% - opacity) }
   // (1) visible face fills, stroke:none
@@ -213,11 +240,10 @@
 // blocks = array of spec dicts: (origin, w, h, dep, base?, edge?, cam?, shade?, seams?, band?, band-frac?, pos3?)
 // Painter's order: draw FAR first (ascending rotated-z of pos3/center), then `extras` on top.
 #let scene(draw, cam: cam-iso, shade: false, edge: rgb("#243038"), blocks: (), extras: none) = {
-  let c = _resolve-cam(cam)
-  let R = _rot(c.at(0), c.at(1), c.at(2))
+  let depth = _proj-of(cam).depth
   let keyed = blocks.map(b => {
     let p3 = b.at("pos3", default: (b.origin.at(0), b.origin.at(1), 0))
-    (b: b, z: _mv(R, p3).at(2))
+    (b: b, z: depth(p3))
   })
   let ordered = keyed.sorted(key: e => e.z)
   for e in ordered {
