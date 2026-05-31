@@ -43,6 +43,10 @@
 #let paper = {
   let t = _theme("paper", neutral.paper, rgb("#1A1A1A"), paper-roles, color-edges)
   t.node-stroke = 1.1pt + rgb("#5A5A5A")
+  // structural lines (skips/residuals) stay NEUTRAL — never a saturated data hue
+  t.edges.skip = (stroke: 1pt + neutral.b70, dash: none)
+  t.edges.residual = (stroke: 1pt + neutral.b70, dash: none)
+  t.edges.data = (stroke: 0.9pt + neutral.ink, dash: none)
   t
 }
 

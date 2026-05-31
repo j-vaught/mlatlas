@@ -72,7 +72,7 @@
       if not flush and prev-east != none {
         let x1 = cx + gap
         draw.line(
-          (prev-east, 0), (x1, 0),
+          (prev-east + 2, 0), (x1 - 4, 0),
           stroke: 2pt + pal.edge.transparentize(15%),
           mark: (end: "stealth", scale: 0.85),
         )
@@ -89,7 +89,8 @@
         let band = if L.at("relu", default: false) { pal.conv-band } else { none }
         let gstart = cx
         for k in range(n) {
-          _prism(draw, cx, w, h, base, stroke, depth-k: depth-k, cap: k == n - 1, band: band)
+          // ReLU band only on the LAST sub-prism (one activation per group, not a barcode)
+          _prism(draw, cx, w, h, base, stroke, depth-k: depth-k, cap: k == n - 1, band: if k == n - 1 { band } else { none })
           cx = cx + w
         }
         let gcenter = (gstart + cx) / 2
@@ -99,7 +100,7 @@
           draw.content((gcenter, -h / 2 - caption-gap), text(size: 8pt, weight: "bold", fill: pal.text)[#cap-text])
         }
         draw.content((gcenter, -h / 2 - caption-gap - 9), text(size: 6.5pt, fill: pal.muted)[#sp#sym.times#sp#sym.times#ch])
-        prev-east = cx + h * depth-k
+        prev-east = cx
       } else if kind == "pool" {
         let sp = L.at("spatial", default: 16)
         let ch = L.at("channels", default: 16)
@@ -107,7 +108,7 @@
         let w = 5.0
         _prism(draw, cx, w, h, pal.pool, stroke, depth-k: depth-k, cap: true)
         cx = cx + w
-        prev-east = cx + h * depth-k
+        prev-east = cx
       } else if kind == "fc" {
         let units = L.at("units", default: 4096)
         let h = 50.0
@@ -118,7 +119,7 @@
         draw.content((gcenter, -h / 2 - caption-gap), text(size: 8pt, weight: "bold", fill: pal.text)[#cap-text])
         draw.content((gcenter, -h / 2 - caption-gap - 9), text(size: 6.5pt, fill: pal.muted)[#units])
         cx = cx + w
-        prev-east = cx + h * depth-k
+        prev-east = cx
       } else if kind == "softmax" {
         let units = L.at("units", default: 1000)
         let h = 28.0
@@ -128,7 +129,7 @@
         draw.content((gcenter, -h / 2 - caption-gap), text(size: 8pt, weight: "bold", fill: pal.text)[#L.at("label", default: [softmax])])
         draw.content((gcenter, -h / 2 - caption-gap - 9), text(size: 6.5pt, fill: pal.muted)[#units])
         cx = cx + w
-        prev-east = cx + h * depth-k
+        prev-east = cx
       }
       i = i + 1
     }

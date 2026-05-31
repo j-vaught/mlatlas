@@ -21,7 +21,7 @@
 // One model column (call inside a cetz.canvas, or via llm-figure / llm-compare).
 #let llm-arch(
   name: "Llama 3 8B",
-  accent: rgb("#2D7DD2"),
+  accent: rgb("#466A9F"),
   vocab: "128k",
   attention: "Grouped-query attention",
   attn-kind: "attn", // "attn" (pink) | "moe-attn" (salmon)
@@ -133,23 +133,23 @@
 
 // ---- a few ready-made model specs (pass to llm-compare) ----
 #let llama3-8b = (
-  name: "Llama 3 8B", accent: rgb("#2D7DD2"), vocab: "128k",
+  name: "Llama 3 8B", accent: rgb("#466A9F"), vocab: "128k",
   attention: [Masked grouped-query\ attention], ffn: [Feed forward], layers: "32×", rope: true,
   dims: (([32 heads], []), ([Hidden dim ], [14,336]), ([Embedding dim ], [4,096]), ([Context ], [128k])),
 )
 #let olmo2-7b = (
-  name: "OLMo 2 7B", accent: rgb("#D6457F"), vocab: "100k",
+  name: "OLMo 2 7B", accent: rgb("#CC2E40"), vocab: "100k",
   attention: [Masked multi-head\ attention], ffn: [Feed forward], layers: "32×", rope: true, qk-norm: true,
   dims: (([32 heads], []), ([Hidden dim ], [11,008]), ([Embedding dim ], [4,096]), ([Context ], [4k])),
 )
 #let deepseek-v3 = (
-  name: "DeepSeek V3", accent: rgb("#D7472E"), vocab: "129k",
+  name: "DeepSeek V3", accent: rgb("#73000A"), vocab: "129k",
   attention: [Multi-head latent\ attention], attn-kind: "moe-attn",
   ffn: [MoE (1 shared + 8 of 256)], ffn-kind: "moe", layers: "61×", rope: true,
   dims: (([128 heads], []), ([Active params ], [37B]), ([Total params ], [671B]), ([Experts ], [256])),
 )
 #let qwen3-235b = (
-  name: "Qwen3 235B-A22B", accent: rgb("#1E9E6A"), vocab: "151k",
+  name: "Qwen3 235B-A22B", accent: rgb("#65780B"), vocab: "151k",
   attention: [Grouped-query\ attention], ffn: [MoE (8 of 128)], ffn-kind: "moe", layers: "94×", rope: true, qk-norm: true,
   dims: (([64 heads], []), ([Active params ], [22B]), ([Total params ], [235B]), ([Experts ], [128])),
 )
