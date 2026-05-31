@@ -1,23 +1,10 @@
-// Two-stream / multi-modal fusion (dual backbone) — built with `two-stream` / `merge`.
+// Two-stream / multi-modal fusion via the dedicated symmetric renderer.
 #import "../lib.typ": *
+#set page(width: auto, height: auto, margin: 14pt, fill: white)
 
-#let image-stream = seq(
-  block(id: "img", label: [Image], role: "data"),
-  conv(label: [Conv], spatial: 56, channels: 64, role: "attention"),
-  conv(label: [Conv], spatial: 28, channels: 128, role: "attention"),
-)
-#let text-stream = seq(
-  block(id: "txt", label: [Text], role: "data"),
-  block(label: [Embed], role: "op"),
-  block(label: [Transformer], role: "attention"),
-)
-
-#standalone(
-  two-stream(
-    image-stream, text-stream,
-    fusion: [Fusion],
-    head: seq(block(label: [MLP Head], role: "op"), block(label: [Output], role: "output")),
-  ),
-  theme: colorful,
-  spacing: (16mm, 13mm),
+#two-stream(
+  left-label: [Image], left: ([Conv 64], [Conv 128]),
+  right-label: [Text], right: ([Embed], [Transformer]),
+  fusion: [Fusion],
+  head: ([MLP Head], [Output]),
 )

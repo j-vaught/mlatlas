@@ -1,9 +1,9 @@
-// A shared backbone with two task heads — built with `branch`.
+// A shared backbone fanning out to two task heads — dedicated symmetric renderer.
 #import "../lib.typ": *
+#set page(width: auto, height: auto, margin: 14pt, fill: white)
 
-#standalone(branch(
-  seq(block(label: [Input], role: "data"), block(label: [Backbone], role: "attention")),
-  seq(block(label: [Cls Head], role: "op"), block(label: [Class], role: "output")),
-  seq(block(label: [Box Head], role: "op"), block(label: [BBox], role: "output")),
-  gap: 2,
-))
+#dual-head(
+  input: [Input],
+  backbone: [Backbone],
+  heads: (([Cls Head], [Class]), ([Box Head], [BBox])),
+)

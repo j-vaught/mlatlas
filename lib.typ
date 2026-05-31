@@ -33,8 +33,9 @@
 // presets
 #import "src/presets/nn.typ": perceptron, mlp, feedforward
 #import "src/presets/transformer.typ": transformer, transformer-block, attention-head
-#import "src/presets/vision.typ": resnet-stage, lenet, lenet5, vgg-block, vgg16, alexnet, unet, two-stream
+#import "src/presets/vision.typ": resnet-stage, lenet, lenet5, vgg-block, vgg16, alexnet, unet
 #import "src/renderers/cnn.typ": cnn, cnn-palette
+#import "src/renderers/multistream.typ": dual-head, two-stream, ms-palette
 #import "src/renderers/lstm.typ": lstm-cell, lstm-palette
 #import "src/presets/generative.typ": gan, vae
 #import "src/presets/sequence.typ": rnn-unroll
