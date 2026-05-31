@@ -41,6 +41,9 @@
 #import "src/presets/graph-models.typ": gcn
 #import "src/renderers/diffusion.typ": diffusion-chain
 #import "src/renderers/pgm.typ": lda-plate, hmm-chain, pgm-palette
+#import "src/renderers/llm.typ": (
+  llm-arch, llm-figure, llm-compare, llm-palette, llama3-8b, olmo2-7b, deepseek-v3, qwen3-235b,
+)
 #import "src/renderers/gnn.typ": message-passing, gnn-palette
 
 #let mlatlas-version = "0.2.0"
