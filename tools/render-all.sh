@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 TYPST="${TYPST:-typst}"
 mkdir -p build/png
 fail=0
-for f in examples/*.typ; do
+for f in examples/*.typ examples/refs/*.typ; do
   name="$(basename "$f" .typ)"
   if "$TYPST" compile --root . "$f" "build/$name.pdf" 2>"build/$name.log"; then
     pdftoppm -png -r 150 "build/$name.pdf" "build/png/$name" >/dev/null 2>&1 || true
