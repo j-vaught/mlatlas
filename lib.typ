@@ -31,7 +31,7 @@
 #import "src/adapters/3d.typ": (
   block3d, block3d-anchors, feature-map, scene, scene-canvas,
   project, project-z, projector, tensor3d-content,
-  cam-iso, cam-cabinet, cam-face, cam-top-down, CAMERAS,
+  cam-iso, cam-dimetric, cam-cabinet, cam-cavalier, cam-face, cam-top-down, CAMERAS,
 )
 
 // composition sugar
