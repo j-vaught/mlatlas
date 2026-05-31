@@ -58,3 +58,55 @@
   let o2 = project((cx, cy, cz), cam: cam, origin: origin)
   block3d(draw, origin: o2, w: kx * step, h: ky * step, dep: kz * step, base: kcolor.lighten(62%), edge: kcolor, cam: cam, sil-weight: 1.4pt, opacity: 78%)
 }
+
+// kernel-slide: an input volume, a conv kernel shown at several slide positions (one solid +
+// faint ghosts), an output volume, and arrows mapping each kernel position to its output cell.
+// The hero figure for 3-D convolution.
+#let kernel-slide(
+  input: (5, 5, 3), kernel: (3, 3, 3), out: (3, 3, 1),
+  positions: ((0, 0, 0), (1, 0, 0), (2, 2, 0)),
+  cell: 0.4, gap: 0.06, arm: 5.2,
+  base: rgb("#E9EDF0"), kcolor: rgb("#73000A"), edge: rgb("#243038"), cam: cam-iso,
+) = cetz.canvas(length: 1cm, {
+  import cetz.draw
+  let p = (paint: kcolor, thickness: 1.0pt, dash: "dashed")
+  let step = cell + gap
+  let (nx, ny, nz) = input
+  let (kx, ky, kz) = kernel
+  let (ox-, oy-, oz-) = out
+  let in-o = (0, 0)
+  let out-o = (arm, 0)
+  // input volume (hollow lattice) + output volume (hollow)
+  voxel-grid(draw, origin: in-o, dims: input, cell: cell, gap: gap, base: base, edge: edge, cam: cam, outline-only: true, shade: false)
+  voxel-grid(draw, origin: out-o, dims: out, cell: cell, gap: gap, base: base, edge: edge, cam: cam, outline-only: true, shade: false)
+  // helper: world center of a sub-block of size k at grid index `at` inside a volume of size dim
+  let wc(dim, k, at) = {
+    let (dx, dy, dz) = dim
+    let (kxx, kyy, kzz) = k
+    let (ax, ay, az) = at
+    (
+      (ax + (kxx - 1) / 2 - (dx - 1) / 2) * step,
+      (ay + (kyy - 1) / 2 - (dy - 1) / 2) * step,
+      (az + (kzz - 1) / 2 - (dz - 1) / 2) * step,
+    )
+  }
+  // draw ghosts first, the primary kernel last (on top)
+  for (i, at) in positions.enumerate() {
+    let primary = i == 0
+    let c = wc(input, kernel, at)
+    let o2 = project(c, cam: cam, origin: in-o)
+    block3d(
+      draw, origin: o2, w: kx * step, h: ky * step, dep: kz * step,
+      base: if primary { kcolor.lighten(58%) } else { kcolor.lighten(85%) }, edge: kcolor,
+      cam: cam, sil-weight: if primary { 1.5pt } else { 1.0pt }, opacity: if primary { 80% } else { 45% },
+    )
+    // corresponding output cell + mapping arrow
+    let oc = wc(out, (1, 1, 1), (at.at(0), at.at(1), 0))
+    let oo2 = project(oc, cam: cam, origin: out-o)
+    block3d(draw, origin: oo2, w: step, h: step, dep: step, base: kcolor.lighten(if primary { 45% } else { 80% }), edge: kcolor, cam: cam, opacity: if primary { 90% } else { 55% })
+    draw.line(o2, oo2, stroke: (paint: kcolor, thickness: if primary { 1.3pt } else { 0.8pt }, dash: if primary { none } else { "dashed" }), mark: (end: "stealth", scale: 0.6))
+  }
+  draw.content((in-o.at(0), -nz * step / 2 - 1.0), text(size: 8pt, weight: "bold", fill: edge)[input #nx×#ny×#nz])
+  draw.content((out-o.at(0), -1.0), text(size: 8pt, weight: "bold", fill: edge)[output])
+  draw.content(((in-o.at(0) + out-o.at(0)) / 2, 2.4), text(size: 7.5pt, fill: kcolor)[#kx×#ky×#kz kernel slides])
+})
