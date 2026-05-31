@@ -38,7 +38,8 @@
   let p = palette
   let ink = p.ink
   let w = 3.7
-  let lane = w / 2 + 0.32 // residual gutter OUTSIDE the blocks (never crosses a border)
+  let chw = w / 2 + 0.72 // container half-width
+  let lane = w / 2 + 0.3 // residual gutters: outside the blocks but INSIDE the container
   let g(c) = (origin.at(0) + c.at(0), origin.at(1) + c.at(1))
   let box(y, lbl, fill: white, stroke: 0.9pt + ink, h: 0.6, tw: w, sz: 7.5pt) = {
     rect(g((-tw / 2, y - h / 2)), g((tw / 2, y + h / 2)), fill: fill, stroke: stroke, radius: 0pt)
@@ -67,8 +68,8 @@
   let yVocab = 11.7
 
   // grey container behind the repeated block
-  rect(g((-w / 2 - 0.55, cBot)), g((w / 2 + 0.55, cTop)), fill: p.container, stroke: 0.8pt + p.container-stroke, radius: 0pt)
-  content(g((-w / 2 - 0.95, (cBot + cTop) / 2)), text(size: 11pt, weight: "bold", fill: accent)[#layers], anchor: "east")
+  rect(g((-chw, cBot)), g((chw, cTop)), fill: p.container, stroke: 0.8pt + p.container-stroke, radius: 0pt)
+  content(g((-chw - 0.25, (cBot + cTop) / 2)), text(size: 11pt, weight: "bold", fill: accent)[#layers], anchor: "east")
 
   // bottom stack
   content(g((0, yIn)), text(size: 7.5pt, style: "italic", fill: ink)[Sample input text])
@@ -98,7 +99,7 @@
 
   // residual lanes (left side): distinct offsets, tapped at the real branch points
   // with junction dots; enter each ⊕ at its left (9 o'clock) point
-  let lane2 = lane + 0.32
+  let lane2 = lane + 0.2
   ln((0, yN1 - 0.42), (-lane, yN1 - 0.42), (-lane, yAdd1), (-0.23, yAdd1))
   ln((0, yAdd1 + 0.34), (-lane2, yAdd1 + 0.34), (-lane2, yAdd2), (-0.23, yAdd2))
   circle(g((0, yN1 - 0.42)), radius: 0.06, fill: ink, stroke: none)
@@ -106,14 +107,14 @@
 
   // RoPE / QK-norm taps on the far left
   if rope {
-    rect(g((-w / 2 - 2.0, yAttn - 0.27)), g((-w / 2 - 1.1, yAttn + 0.27)), fill: p.rope, stroke: 0.9pt + ink)
+    rect(g((-chw - 1.8, yAttn - 0.27)), g((-chw - 0.9, yAttn + 0.27)), fill: p.rope, stroke: 0.9pt + ink)
     content(g((-w / 2 - 1.55, yAttn)), text(size: 7pt, fill: ink)[RoPE])
-    line(g((-w / 2 - 1.1, yAttn)), g((-w / 2 - 0.02, yAttn)), stroke: 0.9pt + ink, mark: (end: "stealth", scale: 0.7))
+    line(g((-chw - 0.9, yAttn)), g((-w / 2 - 0.02, yAttn)), stroke: 0.9pt + ink, mark: (end: "stealth", scale: 0.7))
   }
   if qk-norm {
-    rect(g((-w / 2 - 2.0, yN1 - 0.27)), g((-w / 2 - 1.1, yN1 + 0.27)), fill: p.norm, stroke: 0.9pt + ink)
+    rect(g((-chw - 1.8, yN1 - 0.27)), g((-chw - 0.9, yN1 + 0.27)), fill: p.norm, stroke: 0.9pt + ink)
     content(g((-w / 2 - 1.55, yN1)), text(size: 6.5pt, fill: ink)[QK-Norm])
-    line(g((-w / 2 - 1.1, yN1)), g((-w / 2 - 0.02, yN1)), stroke: 0.9pt + ink, mark: (end: "stealth", scale: 0.7))
+    line(g((-chw - 0.9, yN1)), g((-w / 2 - 0.02, yN1)), stroke: 0.9pt + ink, mark: (end: "stealth", scale: 0.7))
   }
 
   // top stack
@@ -126,12 +127,12 @@
 
   content(g((0, yVocab + 0.75)), text(size: 12pt, weight: "bold", fill: accent)[#name])
 
-  // right-side dimension annotations
-  let anchors = (yAttn, yN2 + 0.4, yEmb + 0.3, yTok)
+  // right-side dimension annotations, anchored to the box each describes
+  let anchors = (yAttn, yFfn, yEmb, yTok) // heads, hidden, embedding, context
   for (i, d) in dims.enumerate() {
     let yy = anchors.at(calc.rem(i, anchors.len()))
-    line(g((w / 2 + 0.05, yy)), g((w / 2 + 0.7, yy)), stroke: 0.6pt + p.muted)
-    content(g((w / 2 + 0.78, yy)), text(size: 6.8pt, fill: p.muted)[#d.at(0) #text(fill: accent)[#d.at(1)]], anchor: "west")
+    line(g((w / 2 + 0.05, yy)), g((w / 2 + 0.95, yy)), stroke: 0.7pt + p.muted)
+    content(g((w / 2 + 1.05, yy)), text(size: 7pt, fill: rgb("#5C5C5C"))[#d.at(0) #text(fill: accent)[#d.at(1)]], anchor: "west")
   }
 }
 

@@ -12,14 +12,27 @@
   data: rgb("#FFF2E3"), data-stroke: rgb("#363636"),
   op: rgb("#FFFFFF"), op-stroke: rgb("#363636"),
   out: rgb("#ECECEC"), out-stroke: rgb("#363636"),
-  left: rgb("#D7E6F5"), left-stroke: rgb("#466A9F"),
-  right: rgb("#E3EFD4"), right-stroke: rgb("#65780B"),
+  left: rgb("#CBE0F4"), left-stroke: rgb("#3F6DAA"),
+  right: rgb("#F2E4C4"), right-stroke: rgb("#9A7F2E"),
   text: rgb("#1A1A1A"),
 )
 
 #let _msbox(draw, cx, cy, lbl, fill, stroke, w: 2.5, h: 0.72, sz: 8.5pt, tcol: rgb("#1A1A1A")) = {
   draw.rect((cx - w / 2, cy - h / 2), (cx + w / 2, cy + h / 2), fill: fill, stroke: stroke, radius: 0pt)
   draw.content((cx, cy), text(size: sz, fill: tcol)[#lbl])
+}
+
+// a small 3-D feature-map prism (front face = box; depth sheared up-right)
+#let _msprism(draw, cx, cy, lbl, fill, stroke, w: 2.5, h: 0.72) = {
+  let d = 0.34
+  let x0 = cx - w / 2
+  let x1 = cx + w / 2
+  let y0 = cy - h / 2
+  let y1 = cy + h / 2
+  draw.line((x0, y1), (x1, y1), (x1 + d, y1 + d), (x0 + d, y1 + d), close: true, fill: fill.lighten(16%), stroke: stroke)
+  draw.line((x1, y0), (x1, y1), (x1 + d, y1 + d), (x1 + d, y0 + d), close: true, fill: fill.darken(14%), stroke: stroke)
+  draw.rect((x0, y0), (x1, y1), fill: fill, stroke: stroke)
+  draw.content((cx, cy), text(size: 8.5pt, fill: rgb("#1A1A1A"))[#lbl])
 }
 
 // A shared backbone fanning out to N task heads (each head = a vertical list of labels).
@@ -41,8 +54,8 @@
     let xs = range(n).map(i => -spread * (n - 1) / 2 + i * spread)
 
     // trunk
-    _msbox(draw, 0, 0, input, p.data, 1.1pt + p.data-stroke)
-    _msbox(draw, 0, -1.35, backbone, p.op, 1.7pt + p.garnet)
+    _msbox(draw, 0, 0, input, p.data, 1.2pt + p.data-stroke)
+    _msbox(draw, 0, -1.35, backbone, p.op, 1.6pt + p.garnet)
     arr((0, -h / 2), (0, -1.35 + h / 2))
 
     // bus
@@ -59,7 +72,7 @@
       for (j, lbl) in head.enumerate() {
         let y = firstY - j * rowh
         let last = j == head.len() - 1
-        _msbox(draw, hx, y, lbl, if last { p.out } else { p.op }, if last { 1.4pt + p.out-stroke } else { 1.1pt + p.op-stroke })
+        _msbox(draw, hx, y, lbl, if last { p.out } else { p.op }, if last { 1.2pt + p.out-stroke } else { 1.2pt + p.op-stroke })
         if j > 0 { arr((hx, firstY - (j - 1) * rowh - h / 2), (hx, y + h / 2)) }
       }
     }
@@ -74,7 +87,7 @@
   fusion: [Fusion],
   head: ([MLP Head], [Output]),
   palette: ms-palette,
-  sx: 2.7,
+  sx: 2.25,
 ) = {
   let p = palette
   cetz.canvas(length: 1cm, {
@@ -86,15 +99,21 @@
     let R = (right-label,) + right
     let maxlen = calc.max(L.len(), R.len())
 
-    let draw-stream(xp, nodes, fill, stroke) = {
+    let draw-stream(xp, nodes, fill, stroke, prism: false) = {
       let off = maxlen - nodes.len()
       for (i, lbl) in nodes.enumerate() {
         let y = -(off + i) * rowh
-        _msbox(draw, xp, y, lbl, if i == 0 { p.data } else { fill }, if i == 0 { 1.1pt + p.data-stroke } else { 1.2pt + stroke })
+        if i == 0 {
+          _msbox(draw, xp, y, lbl, p.data, 1.1pt + p.data-stroke)
+        } else if prism {
+          _msprism(draw, xp, y, lbl, fill, 1.1pt + stroke)
+        } else {
+          _msbox(draw, xp, y, lbl, fill, 1.2pt + stroke)
+        }
         if i > 0 { arr((xp, -(off + i - 1) * rowh - h / 2), (xp, y + h / 2)) }
       }
     }
-    draw-stream(-sx, L, p.left, p.left-stroke)
+    draw-stream(-sx, L, p.left, p.left-stroke, prism: true) // image CNN stream = 3-D prisms
     draw-stream(sx, R, p.right, p.right-stroke)
 
     let bottomY = -(maxlen - 1) * rowh
@@ -110,7 +129,7 @@
     for (i, lbl) in head.enumerate() {
       let y = fusionY - (i + 1) * rowh
       let last = i == head.len() - 1
-      _msbox(draw, 0, y, lbl, if last { p.out } else { p.op }, if last { 1.4pt + p.out-stroke } else { 1.1pt + p.op-stroke })
+      _msbox(draw, 0, y, lbl, if last { p.out } else { p.op }, if last { 1.2pt + p.out-stroke } else { 1.2pt + p.op-stroke })
       let prevY = if i == 0 { fusionY } else { fusionY - i * rowh }
       arr((0, prevY - h / 2), (0, y + h / 2))
     }
