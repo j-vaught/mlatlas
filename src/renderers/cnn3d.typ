@@ -195,3 +195,61 @@
   draw.content((encx, ((encA.at(0)).anchor)("top-screen").at(1) + 0.3), text(size: 8pt, weight: "bold", fill: palette.text)[encoder])
   draw.content((decx, ((decA.at(0)).anchor)("top-screen").at(1) + 0.3), text(size: 8pt, weight: "bold", fill: palette.text)[decoder])
 })
+
+// ---------------------------------------------------------------- fpn3d (feature pyramid)
+// Bottom-up backbone (left column, C-levels) + top-down pyramid (right column, P-levels) with
+// 1x1 lateral connections per level. Backbone deepens going up; pyramid is uniform-channel.
+#let fpn3d(
+  levels: ((52, 256, [C2]), (26, 512, [C3]), (13, 1024, [C4]), (7, 2048, [C5])),
+  pyr-channels: 256, palette: cnn3d-palette, cam: cam-cabinet, dy: 2.6, arm: 5.5,
+) = cetz.canvas(length: 1cm, {
+  import cetz.draw
+  let L = levels.len()
+  let bx = 0.0
+  let px = arm
+  let yof(i) = i * dy
+  let bb = ()
+  let py = ()
+  for (i, lv) in levels.enumerate() {
+    let (sp, ch, lab) = lv
+    let y = yof(i)
+    volume(draw, (bx, y), sp, ch, base: palette.conv, palette: palette, cam: cam, relu: true)
+    volume(draw, (px, y), sp, pyr-channels, base: palette.up, palette: palette, cam: cam, width: 0.3)
+    bb.push(vol-anchors((bx, y), sp, ch, cam: cam))
+    py.push(vol-anchors((px, y), sp, pyr-channels, width: 0.3, cam: cam))
+  }
+  for i in range(L - 1) {
+    draw.line(((bb.at(i)).anchor)("top-screen"), ((bb.at(i + 1)).anchor)("bottom-screen"), stroke: 1.5pt + palette.edge.transparentize(10%), mark: (end: "stealth", scale: 0.7))
+    draw.line(((py.at(i + 1)).anchor)("bottom-screen"), ((py.at(i)).anchor)("top-screen"), stroke: 1.5pt + palette.edge.transparentize(10%), mark: (end: "stealth", scale: 0.7))
+  }
+  for i in range(L) {
+    let p1 = ((bb.at(i)).anchor)("east")
+    let p2 = ((py.at(i)).anchor)("west")
+    draw.line((p1.at(0) + 0.05, yof(i)), (p2.at(0) - 0.05, yof(i)), stroke: 1.1pt + palette.skip, mark: (end: "stealth", scale: 0.6))
+  }
+  for (i, lv) in levels.enumerate() {
+    let (sp, ch, lab) = lv
+    draw.content((((bb.at(i)).anchor)("west").at(0) - 0.3, yof(i)), anchor: "east", text(size: 7.5pt, weight: "bold", fill: palette.text)[#lab])
+    draw.content((((py.at(i)).anchor)("east").at(0) + 0.3, yof(i)), anchor: "west", text(size: 7.5pt, weight: "bold", fill: palette.text)[P#(i + 2)])
+  }
+  draw.content((bx, yof(L - 1) + 1.6), text(size: 8pt, weight: "bold", fill: palette.text)[backbone])
+  draw.content((px, yof(L - 1) + 1.6), text(size: 8pt, weight: "bold", fill: palette.text)[pyramid])
+})
+
+// thin 3-D preset wrappers (the 2-D cnn() presets in vision.typ stay untouched)
+#let vgg3d() = feature-stack-fig((
+  (spatial: 224, channels: 3, base: cnn3d-palette.input, label: [input]),
+  (spatial: 224, channels: 64, n: 2, relu: true, label: [conv1]),
+  (spatial: 112, channels: 128, n: 2, relu: true, label: [conv2]),
+  (spatial: 56, channels: 256, n: 3, relu: true, label: [conv3]),
+  (spatial: 28, channels: 512, n: 3, relu: true, label: [conv4]),
+  (spatial: 14, channels: 512, n: 3, relu: true, label: [conv5]),
+  (spatial: 7, channels: 4096, base: cnn3d-palette.fc, width: 0.24, label: [fc]),
+))
+#let alexnet3d() = feature-stack-fig((
+  (spatial: 227, channels: 3, base: cnn3d-palette.input, label: [input]),
+  (spatial: 55, channels: 96, relu: true, label: [conv1]),
+  (spatial: 27, channels: 256, relu: true, label: [conv2]),
+  (spatial: 13, channels: 384, n: 3, relu: true, label: [conv3-5]),
+  (spatial: 6, channels: 4096, base: cnn3d-palette.fc, width: 0.24, label: [fc6-7]),
+))

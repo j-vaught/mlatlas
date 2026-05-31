@@ -42,7 +42,10 @@
 #import "src/presets/transformer.typ": transformer, transformer-block, attention-head
 #import "src/presets/vision.typ": resnet-stage, lenet, lenet5, vgg-block, vgg16, alexnet, unet
 #import "src/renderers/cnn.typ": cnn, cnn-palette
-#import "src/renderers/cnn3d.typ": cnn3d-palette, volume, vol-anchors, feature-stack, feature-stack-fig, resnet3d, unet3d
+#import "src/renderers/cnn3d.typ": (
+  cnn3d-palette, volume, vol-anchors, feature-stack, feature-stack-fig,
+  resnet3d, unet3d, fpn3d, vgg3d, alexnet3d,
+)
 #import "src/renderers/multistream.typ": dual-head, two-stream, ms-palette
 #import "src/renderers/lstm.typ": lstm-cell, lstm-palette
 #import "src/presets/generative.typ": gan, vae
