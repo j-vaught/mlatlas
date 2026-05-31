@@ -88,10 +88,24 @@
   }
 }
 
-#let _emit-group(g, th) = {
+// Returns an array: the enclosure box + (optionally) a label node placed just OUTSIDE
+// the top-right of the plate (so it never overlaps the data path).
+#let _emit-group(g, th, posmap) = {
   let cs = style-of("container", th)
-  let lbl = if g.label == none { none } else { text(size: th.label-size, fill: cs.at("text-fill", default: th.palette.b70))[#g.label] }
-  fl.fl-enclose(g.members, lbl, cs.at("stroke", default: 0.8pt + th.palette.b70), cs.at("fill", default: none), 5pt, th.corner-radius)
+  let box = fl.fl-enclose(g.members, none, cs.at("stroke", default: 0.8pt + th.palette.b70), cs.at("fill", default: none), 8pt, th.corner-radius)
+  if g.label == none {
+    (box,)
+  } else {
+    let ms = g.members.map(m => posmap.at(m, default: none)).filter(p => p != none)
+    if ms.len() == 0 {
+      (box,)
+    } else {
+      let umax = calc.max(..ms.map(p => p.at(0)))
+      let vmin = calc.min(..ms.map(p => p.at(1)))
+      let lbl = fl.fl-borderless((umax + 0.6, vmin - 0.4), text(size: th.label-size, fill: cs.at("text-fill", default: th.palette.b70))[#g.label], name: g.id + "/__lbl")
+      (box, lbl)
+    }
+  }
 }
 
 #let render(f, theme: mono, dir: "ttb", spacing: auto, check: "warn", role-map: (:), ..diagram-args) = {
@@ -116,10 +130,10 @@
   let elements = ()
   for n in nodes { elements.push(_emit-node(n, th, role-map)) }
   for (i, e) in f.edges.enumerate() { elements.push(_emit-edge(e, th, posmap, lanes.at(str(i), default: 0))) }
-  for g in f.groups { elements.push(_emit-group(g, th)) }
+  for g in f.groups { elements += _emit-group(g, th, posmap) }
 
   let sp = if spacing != auto { spacing } else { th.spacing }
-  let dia = fl.fl-diagram(sp, th.node-stroke, elements)
+  let dia = fl.fl-diagram(sp, th.node-stroke, elements, mark-scale: th.at("mark-scale", default: 70%))
   let themed = {
     set text(font: th.at("font", default: "New Computer Modern"), size: th.at("font-size", default: 9pt), fill: pick-text(th.paper))
     dia

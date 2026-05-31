@@ -19,7 +19,7 @@
 
 // Build a full role table from a role->hue map.
 //   kind: "tint" (light fill + coloured border) | "solid" (saturated fill, for dark/slides)
-#let color-roles(hues, kind: "tint", weight: 2pt, amount: 16%, aux: _aux-light) = {
+#let color-roles(hues, kind: "tint", weight: 1.4pt, amount: 16%, aux: _aux-light) = {
   let out = (:)
   for (role, hue) in hues {
     let fill = if kind == "solid" { hue } else { tint(hue, amount: amount) }
@@ -73,6 +73,28 @@
   add: (fill: white, stroke: 1pt + black, text-fill: black),
   focal: (fill: white, stroke: 2.6pt + black, text-fill: black),
   container: (fill: none, stroke: (paint: rgb("#777777"), thickness: 0.8pt, dash: "dashed"), text-fill: rgb("#555555")),
+)
+
+// Canonical ML-paper palette (the instantly-recognizable Transformer-paper pastels):
+// pastel fill + same-hue darker 1.2pt border + near-black text.
+#let _pp(fill, border) = (fill: fill, stroke: 1.2pt + border, text-fill: rgb("#1A1A1A"))
+#let paper-roles = (
+  input: _pp(rgb("#FCE0E1"), rgb("#C25E63")),
+  data: _pp(rgb("#FCE0E1"), rgb("#C25E63")),
+  io: _pp(rgb("#DCDFF0"), rgb("#7E86C2")),
+  op: _pp(rgb("#C2E8F7"), rgb("#4C9CC2")),
+  compute: _pp(rgb("#C2E8F7"), rgb("#4C9CC2")),
+  norm: _pp(rgb("#F2F3C1"), rgb("#AEB146")),
+  activation: _pp(rgb("#F2F3C1"), rgb("#AEB146")),
+  attention: _pp(rgb("#FCE2BB"), rgb("#D9962F")),
+  param: _pp(rgb("#DCDFF0"), rgb("#7E86C2")),
+  loss: _pp(rgb("#F7D2CE"), rgb("#CC5B4E")),
+  memory: _pp(rgb("#E7DDF2"), rgb("#9B7BC4")),
+  output: _pp(rgb("#CBE7CF"), rgb("#5BA86A")),
+  add: _pp(rgb("#FFFFFF"), rgb("#7A7A7A")),
+  focal: (fill: rgb("#FCE0E1"), stroke: 2.2pt + rgb("#73000A"), text-fill: rgb("#1A1A1A")),
+  control: (fill: white, stroke: (paint: rgb("#A2A2A2"), thickness: 1pt, dash: "dashed"), text-fill: rgb("#5C5C5C")),
+  container: (fill: rgb("#F5F5F6"), stroke: (paint: rgb("#A2A2A2"), thickness: 0.6pt, dash: "dashed"), text-fill: rgb("#5C5C5C")),
 )
 
 // ---- edge styles per theme family ----

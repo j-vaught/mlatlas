@@ -6,7 +6,7 @@
 #import "tokens.typ": neutral, okabe, colorful-hues
 #import "contrast.typ": deep-merge
 #import "roles.typ": (
-  mono-roles, colorful-roles, colorblind-roles, grayscale-roles, color-roles,
+  mono-roles, colorful-roles, colorblind-roles, grayscale-roles, paper-roles, color-roles,
   mono-edges, color-edges,
 )
 
@@ -17,6 +17,7 @@
   node-width: 26mm, // uniform block width -> tidy columns (overridable per node)
   spacing: (11mm, 6mm),
   mark: "stealth", // the ONLY arrowhead style
+  mark-scale: 65%, // crisp arrowheads sized to stroke
   font: "New Computer Modern",
   font-size: 9pt,
   label-size: 7pt,
@@ -38,6 +39,12 @@
 #let colorblind = _theme("colorblind", neutral.paper, neutral.ink, colorblind-roles, color-edges)
 #let grayscale = _theme("grayscale", neutral.paper, neutral.ink, grayscale-roles, mono-edges)
 #let bw = grayscale
+// Canonical ML-paper pastels (the recognizable Transformer-paper look).
+#let paper = {
+  let t = _theme("paper", neutral.paper, rgb("#1A1A1A"), paper-roles, color-edges)
+  t.node-stroke = 1.1pt + rgb("#5A5A5A")
+  t
+}
 
 // Slides: opt-in dark theme (saturated fills, dark paper, light text via pick-text).
 #let _slides-aux = (

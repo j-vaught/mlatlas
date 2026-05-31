@@ -48,4 +48,4 @@
   snap: -1,
 )
 
-#let fl-diagram(spacing, node-stroke, elements) = diagram(spacing: spacing, node-stroke: node-stroke, ..elements)
+#let fl-diagram(spacing, node-stroke, elements, mark-scale: 70%) = diagram(spacing: spacing, node-stroke: node-stroke, mark-scale: mark-scale, ..elements)

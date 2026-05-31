@@ -14,11 +14,13 @@
   let wp = _pt(w)
   let hp = _pt(h)
   let dp = _pt(depth)
-  let dx = dp * 0.42
-  let dy = dp * 0.42
+  // cabinet oblique: front face stays an upright rectangle; depth shears up-right ×0.38
+  let dx = dp * 0.38
+  let dy = dp * 0.38
+  // directional lighting: top brightest, front mid, side darkest (top > front > side)
   let light = lum(front) >= 0.5
-  let top = if light { front.darken(10%) } else { front.lighten(16%) }
-  let side = if light { front.darken(20%) } else { front.lighten(8%) }
+  let top = if light { front.lighten(13%) } else { front.lighten(26%) }
+  let side = if light { front.darken(15%) } else { front.lighten(7%) }
   cetz.canvas(length: 1pt, {
     import cetz.draw: line, rect
     line((0, hp), (wp, hp), (wp + dx, hp + dy), (dx, hp + dy), close: true, fill: top, stroke: stroke)

@@ -8,7 +8,7 @@
 
 // themes & customization
 #import "src/theme/themes.typ": (
-  mono, colorful, colorblind, grayscale, bw, slides, theme, palette-theme, style-of, edge-style-of,
+  mono, colorful, colorblind, grayscale, bw, slides, paper, theme, palette-theme, style-of, edge-style-of,
 )
 #import "src/theme/tokens.typ": neutral, okabe, colorful-hues
 #import "src/theme/contrast.typ": lum, pick-text, tint, deep-merge
