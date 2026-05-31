@@ -27,6 +27,13 @@
 #import "src/prim/slab.typ": slab, conv
 #import "src/prim/neuron-graph.typ": neuron-graph
 
+// 3-D block engine (hand-rolled projection: project 8 corners -> cull -> hull silhouette)
+#import "src/adapters/3d.typ": (
+  block3d, block3d-anchors, feature-map, scene, scene-canvas,
+  project, project-z, projector, tensor3d-content,
+  cam-iso, cam-cabinet, cam-face, cam-top-down, CAMERAS,
+)
+
 // composition sugar
 #import "src/sugar/sugar.typ": seq, parallel, branch, merge, concat, residual, plate, graph
 
