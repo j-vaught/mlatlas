@@ -1,10 +1,10 @@
-// Graph neural network: message passing + a GCN pipeline.
+// Graph neural network: radial message passing (multi-head) + a GCN pipeline.
 #import "../lib.typ": *
-#set page(width: auto, height: auto, margin: 8pt, fill: white)
+#set page(width: auto, height: auto, margin: 12pt, fill: white)
 
 #stack(
   dir: ltr,
-  spacing: 20pt,
-  align(horizon, render(message-passing(neighbors: 3))),
-  align(horizon, render(gcn(layers: 2))),
+  spacing: 24pt,
+  align(horizon, message-passing(neighbors: 5, heads: 3)),
+  align(horizon, render(gcn(layers: 2), theme: paper)),
 )

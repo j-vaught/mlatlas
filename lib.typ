@@ -38,6 +38,7 @@
 #import "src/renderers/lstm.typ": lstm-cell, lstm-palette
 #import "src/presets/generative.typ": gan, vae, diffusion-chain
 #import "src/presets/sequence.typ": rnn-unroll
-#import "src/presets/graph-models.typ": message-passing, gcn
+#import "src/presets/graph-models.typ": gcn
+#import "src/renderers/gnn.typ": message-passing, gnn-palette
 
 #let mlatlas-version = "0.2.0"
