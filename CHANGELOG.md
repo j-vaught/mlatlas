@@ -2,6 +2,16 @@
 
 All notable changes to **mlatlas** are documented here.
 
+## [Unreleased]
+
+### Added
+- **Vision refs for LaMa inpainting:** `examples/refs/vision/ffc-block.typ` (a Fast Fourier
+  Convolution layer — local/global channel split, the four cross-domain conv paths, and an
+  expanded Spectral Transform: real 2-D FFT → concat(Re,Im) → 1×1 conv → inverse FFT) and
+  `examples/refs/vision/lama-inpainting.typ` (the LaMa generator as an encoder→FFC-bottleneck→
+  decoder hourglass plus the training objective: HRF perceptual, PatchGAN adversarial,
+  discriminator feature-matching, R1, and L1-on-known).
+
 ## [0.3.0] — 2026-05-31
 
 A hand-rolled 3-D block engine and a library-wide 3-D expansion.
