@@ -19,6 +19,16 @@ All notable changes to **mlatlas** are documented here.
   decoder hourglass plus the training objective: HRF perceptual, PatchGAN adversarial,
   discriminator feature-matching, R1, and L1-on-known).
 
+### Removed
+- Dead public exports `add-op` / `mul-op` — use `op-node(sym: ..)` directly. Also dropped an
+  unused, shadowed `diffusion-chain` preset (the dedicated `diffusion-chain` renderer is unaffected).
+
+### Housekeeping
+- Stopped tracking regenerable/unreferenced files (build outputs, third-party reference figures,
+  unused media, stale example PDFs) — repo went 1256 → 251 tracked files. Merged two tiny internal
+  modules (`ir/validate`, `layout/bbox`) into their sole callers; relocated 3-D prototype probes to
+  `probes/probe3d/`; fixed two examples with broken import paths.
+
 ## [0.3.0] — 2026-05-31
 
 A hand-rolled 3-D block engine and a library-wide 3-D expansion.
