@@ -7,7 +7,6 @@
 #import "../theme/themes.typ": mono, style-of, edge-style-of
 #import "../theme/contrast.typ": pick-text, deep-merge
 #import "../ir/ir.typ": *
-#import "../ir/validate.typ": validate
 #import "../adapters/fletcher.typ" as fl
 #import "../adapters/cetz.typ": cuboid
 #import "../adapters/3d.typ": tensor3d-content // content-returning (keeps render.typ cetz-free)

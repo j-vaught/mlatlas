@@ -14,8 +14,8 @@
 #set page(width: auto, height: auto, margin: 16pt, fill: white)
 #set text(font: "New Computer Modern", size: 9pt)
 
-#import "../../src/renderers/cnn3d.typ": volume, vol-anchors, cnn3d-palette
-#import "../../src/adapters/3d.typ": cam-cabinet
+#import "../../../src/renderers/cnn3d.typ": volume, vol-anchors, cnn3d-palette
+#import "../../../src/adapters/3d.typ": cam-cabinet
 
 #let garnet = rgb("#73000A")
 #let ink    = rgb("#222222")

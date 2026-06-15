@@ -5,7 +5,7 @@
 // coordinates, so back-face culling and a clean single silhouette are impossible (native
 // gives corner miter-spikes AND a self-intersecting "bowtie" outline). Here we project the
 // 8 corners ourselves -> we always know screen positions -> correct cull + clean silhouette
-// at ANY camera angle. Reference prototype: build/probe3d/proto3.typ (rendered clean at 6 angles).
+// at ANY camera angle. Reference prototype: probes/probe3d/proto3.typ (rendered clean at 6 angles).
 //
 // Pipeline per block: rotate (3-angle camera matrix) -> orthographic z-drop -> project the 8
 // corners ONCE -> cull faces whose rotated normal faces away -> fill visible faces (stroke:none)

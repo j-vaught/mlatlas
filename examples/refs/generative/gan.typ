@@ -11,8 +11,8 @@
 #set text(font: "New Computer Modern", size: 9pt)
 
 // pull the 3-D feature-volume engine + cnn palette out of the library
-#import "../../src/renderers/cnn3d.typ": volume, vol-anchors, cnn3d-palette
-#import "../../src/adapters/3d.typ": cam-cabinet
+#import "../../../src/renderers/cnn3d.typ": volume, vol-anchors, cnn3d-palette
+#import "../../../src/adapters/3d.typ": cam-cabinet
 
 #let garnet = rgb("#73000A")
 #let ink    = rgb("#222222")

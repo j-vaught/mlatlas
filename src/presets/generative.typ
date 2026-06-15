@@ -31,18 +31,3 @@
   block(label: [Decoder $p_theta$], role: "attention"),
   block(id: "xh", label: [Reconstruction $hat(x)$], role: "output"),
 )
-
-// Diffusion: reverse (denoising) chain x_T -> ... -> x_0.
-#let diffusion-chain(steps: 4) = {
-  let nodes = ()
-  let edges = ()
-  for i in range(steps + 1) {
-    let lbl = if i == 0 { [$x_T$] } else if i == steps { [$x_0$] } else { [$x_(T - #i)$] }
-    let r = if i == 0 { "data" } else if i == steps { "output" } else { "op" }
-    nodes.push(ir-node("x" + str(i), label: lbl, role: r, pos: (i, 0)))
-  }
-  for i in range(steps) {
-    edges.push(ir-edge("x" + str(i), "x" + str(i + 1), kind: "data", label: if i == 0 { [denoise $p_theta$] } else { none }))
-  }
-  frag(nodes: nodes, edges: edges, meta: ("in": "x0", "out": "x" + str(steps)))
-}

@@ -8,6 +8,3 @@
   let n = ir-node(nid, label: [#sym], kind: kind, role: role, pos: (0, 0), width: size, height: size, inset: 1pt)
   frag(nodes: (n,), edges: (), meta: ("in": nid, "out": nid))
 }
-
-#let add-op(id: auto) = op-node(id: id, sym: sym.plus.o)
-#let mul-op(id: auto) = op-node(id: id, sym: sym.times.circle)

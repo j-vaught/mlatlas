@@ -3,7 +3,9 @@
 // node as an axis-aligned box in grid units and tests it against each edge segment.
 
 #import "../layout/layout.typ": resolve-route, gutter-axis, edge-segments
-#import "../layout/bbox.typ": node-half
+
+// Node footprint in GRID units (scale-independent): default half-extents ~0.46 cell each.
+#let node-half(n) = (0.46, 0.46)
 
 #let _seg-hits(a, b, n) = {
   let (hu, hv) = node-half(n)

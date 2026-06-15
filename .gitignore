@@ -15,8 +15,17 @@ venv/
 # Typst local cache
 .typst-cache/
 
-# NOTE: example/figure outputs (*.pdf, *.png) are intentionally tracked — they
-# showcase what the library produces.
+# Generated render outputs — regenerate any time with `tools/render-all.sh`.
+# (The curated README showcase images live in media/ and ARE tracked.)
+build/
+examples/*.pdf
 
-# downloaded third-party textbooks (free to read; not redistributed here)
+# Third-party reference figures kept locally for development only — not redistributed
+# (licensing varies; some are CC-BY-NC-ND) and not needed to build the library.
+docs/refs/
+
+# Unreferenced/archived media kept locally but out of the repo.
+media/archive/
+
+# Downloaded third-party textbooks (free to read; not redistributed here).
 references/
