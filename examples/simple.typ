@@ -2,7 +2,7 @@
 #import "../lib.typ": *
 
 #standalone(seq(
-  block(label: [Input], role: "data"),
-  block(label: [Hidden Layer]),
-  block(label: [Output], role: "output"),
+  block2d(label: [Input], role: "data"),
+  block2d(label: [Hidden Layer]),
+  block2d(label: [Output], role: "output"),
 ))

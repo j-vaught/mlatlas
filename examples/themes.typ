@@ -3,9 +3,9 @@
 #set page(width: auto, height: auto, margin: 8pt, fill: rgb("#C7C7C7"))
 
 #let g = seq(
-  block(label: [Input], role: "data"),
+  block2d(label: [Input], role: "data"),
   transformer-block(heads: 8),
-  block(label: [Output], role: "output", emphasis: true),
+  block2d(label: [Output], role: "output", emphasis: true),
 )
 
 #stack(

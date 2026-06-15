@@ -22,7 +22,9 @@
 #import "src/render/render.typ": render, standalone
 
 // primitives
-#import "src/prim/block.typ": block
+// NOTE: exported as `block2d` (pairs with `block3d`) so the package does not shadow
+// Typst's built-in `block()` for users who `#import "@preview/mlatlas:..": *`.
+#import "src/prim/block.typ": block as block2d
 #import "src/prim/op.typ": op-node, add-op, mul-op
 #import "src/prim/slab.typ": slab, conv, tensor
 #import "src/prim/neuron-graph.typ": neuron-graph

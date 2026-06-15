@@ -47,9 +47,9 @@ A luminance check picks readable text for *any* fill, so contrast is never wrong
 
 // Simple is one line — auto-wired, auto-themed.
 #render(seq(
-  block(label: [Input], role: "data"),
-  block(label: [Hidden Layer]),
-  block(label: [Output], role: "output"),
+  block2d(label: [Input], role: "data"),
+  block2d(label: [Hidden Layer]),
+  block2d(label: [Output], role: "output"),
 ))
 
 #render(transformer(blocks: 6, heads: 8, rope: true))   // residual skips auto-routed
@@ -119,14 +119,14 @@ coordinates**:
 #render(branch(backbone, cls-head, box-head))
 
 // arbitrary fan-in / fan-out
-#render(merge(arm-a, arm-b, arm-c, into: block(label: [Concat])))
+#render(merge(arm-a, arm-b, arm-c, into: block2d(label: [Concat])))
 ```
 
 ## Customization — no forking
 
 ```typst
-block(label: [Conv], style: (fill: rgb("#eee"), stroke: 2pt + rgb("#65780B")))  // per-node
-block(label: [Focal], emphasis: true)                                            // sparse garnet accent
+block2d(label: [Conv], style: (fill: rgb("#eee"), stroke: 2pt + rgb("#65780B")))  // per-node
+block2d(label: [Focal], emphasis: true)                                            // sparse garnet accent
 graph(edges: (("a", "b", (style: (stroke: 2pt + red), label: [grad])),))         // per-edge
 render(ir, role-map: (attention: "param"))                                       // restyle a category
 render(ir, theme: theme(spacing: (18mm, 12mm)))                                  // tweak any theme field
@@ -150,7 +150,7 @@ scale-independent check:
 |---|---|
 | Themes | `mono` (default), `colorful`, `colorblind`, `grayscale`/`bw`, `slides`; `theme(..)`, `palette-theme(..)`, `theme-swatch` |
 | IR | `ir-node`, `ir-edge`, `frag`, `namespace`, `shift` (escape hatch) |
-| Primitives | `block`, `op-node`, `slab`/`conv` (3-D prisms), `neuron-graph`, `tensor` (3-D IR node) |
+| Primitives | `block2d`, `op-node`, `slab`/`conv` (3-D prisms), `neuron-graph`, `tensor` (3-D IR node) |
 | **3-D engine** | `block3d`, `feature-map`, `scene`, `project`, `tensor3d`, `arrow3d`/`dock`, `voxel-grid` + `cam-iso`/`cam-cabinet`/… presets |
 | Composition | `seq`, `parallel`, `branch`, `merge`, `concat`, `residual`, `plate`, `graph` |
 | Presets | `perceptron`, `mlp`, `feedforward`, `transformer`(`-block`), `attention-head`, `resnet-stage`, `unet`, `two-stream`, `gan`, `vae`, `rnn-unroll`, `gcn` |

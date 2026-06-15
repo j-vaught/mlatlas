@@ -13,9 +13,9 @@
 
 // --- block factories (uniform width for tidy columns); sublayers stay monochrome so
 // the ONLY garnet block-outline is the RMSNorm whose position moves -----------------
-#let attn = block(label: [Masked multi-head\ attention], role: "compute", width: 34mm)
-#let ffn = block(label: [Feed forward], role: "compute", width: 34mm)
-#let rms(emph: false) = block(
+#let attn = block2d(label: [Masked multi-head\ attention], role: "compute", width: 34mm)
+#let ffn = block2d(label: [Feed forward], role: "compute", width: 34mm)
+#let rms(emph: false) = block2d(
   label: [RMSNorm], role: "norm", width: 34mm,
   stroke: if emph { 1.6pt + garnet } else { auto },
 )
