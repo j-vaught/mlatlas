@@ -4,6 +4,13 @@ All notable changes to **mlatlas** are documented here.
 
 ## [Unreleased]
 
+### Changed (breaking)
+- **`block` renamed to `block2d`.** The public node primitive is now exported as `block2d`
+  (pairing with `block3d`), so a wildcard `#import "@preview/mlatlas:..": *` no longer shadows
+  Typst's built-in `block()` layout container — downstream `block(inset:.., fill:..)` works
+  again. Migration: `block(..)` → `block2d(..)`. Internal scoped imports of the primitive are
+  unchanged. (#2)
+
 ### Added
 - **Vision refs for LaMa inpainting:** `examples/refs/vision/ffc-block.typ` (a Fast Fourier
   Convolution layer — local/global channel split, the four cross-domain conv paths, and an
