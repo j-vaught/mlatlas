@@ -1,5 +1,7 @@
 // mlatlas — a Typst library for ML / neural-network / AI / vision diagrams.
-// Public entry point:  #import "@preview/mlatlas:0.3.0": *
+// Entry point (work in progress — local install for now, not yet on the Typst registry):
+//   #import "@local/mlatlas:0.3.0": *      // local install
+//   #import "@preview/mlatlas:0.3.0": *    // once published
 //
 // Print-first by default (light fills, dark text, sharp orthogonal edges, stealth
 // arrows). Switch the whole look with one setting — `theme: colorful` / `grayscale` /

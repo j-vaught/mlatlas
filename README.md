@@ -2,6 +2,13 @@
 
 **Declarative, print-first machine-learning & neural-network diagrams for [Typst](https://typst.app).**
 
+> [!WARNING]
+> **Work in progress — local install only.** mlatlas is **not yet published** to
+> [Typst Universe](https://typst.app/universe), so `#import "@preview/mlatlas:..."` does **not**
+> work yet. Install it locally — see **[Installation](#installation)**. The API is still
+> stabilizing and may change (e.g. the node primitive was recently renamed `block` → `block2d`)
+> before the first published release.
+
 Describe the *model* — `transformer(blocks: 6)`, `mlp((4, 8, 8, 3))`, a two-stream fusion —
 and get a clean, publication-quality figure. Batteries-included defaults so a simple diagram
 is one line; full control (themes, per-element overrides, custom topologies, raw IR) when you
@@ -40,10 +47,38 @@ white text.** Switch the entire look with one setting:
 
 A luminance check picks readable text for *any* fill, so contrast is never wrong by accident.
 
+## Installation
+
+mlatlas is **not on the Typst package registry yet**, so install it locally — either as a
+local package or by relative path.
+
+**As a local package (recommended).** Clone into Typst's local-packages directory, then import
+with the `@local` namespace:
+
+```bash
+# Linux
+git clone https://github.com/j-vaught/mlatlas.git \
+  ~/.local/share/typst/packages/local/mlatlas/0.3.0
+# macOS:   ~/Library/Application Support/typst/packages/local/mlatlas/0.3.0
+# Windows: %APPDATA%\typst\packages\local\mlatlas\0.3.0
+```
+
+```typst
+#import "@local/mlatlas:0.3.0": *
+```
+
+**Or by relative path.** Clone anywhere and point at `lib.typ` directly:
+
+```typst
+#import "path/to/mlatlas/lib.typ": *
+```
+
+> Once published, `#import "@preview/mlatlas:0.3.0": *` will work too — until then it won't resolve.
+
 ## Quick start
 
 ```typst
-#import "@preview/mlatlas:0.3.0": *   // or local: #import "mlatlas/lib.typ": *
+#import "@local/mlatlas:0.3.0": *     // local install — see Installation above (not on @preview yet)
 
 // Simple is one line — auto-wired, auto-themed.
 #render(seq(
